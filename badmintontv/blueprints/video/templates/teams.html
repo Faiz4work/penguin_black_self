@@ -1,0 +1,35 @@
+{% extends 'layouts/app.html' %}
+
+
+{% block title %}
+Players
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/players.css')}}">
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+<h2>All Players</h2>
+
+<div class="video_box">
+{% for team in teams %}
+    <div class="all_box">
+        <a href="{{ url_for('video.team_to_matches', query=team.name)}}">
+            {{ team.name | replace('_', ' / ')}} 
+            ({{ team.country.name }})
+        </a>
+        <br><br>
+    </div>
+{% endfor %}
+</div>
+
+</div>
+</div>
+</div>
+
+{% endblock %}

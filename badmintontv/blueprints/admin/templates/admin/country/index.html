@@ -1,0 +1,59 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/items.html' as items %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/user.html' as account %}
+{% import 'macros/tables.html' as tables %}
+
+
+{% block title %}
+Admin - Countries / List
+{% endblock %}
+
+
+{% block body %}
+
+<!-- Search form -->
+<br>
+{{ f.search('admin.countries') }}
+
+<!-- Case where there are no records -->
+{% if countries.total == 0 %}
+    <h2>No results found</h2>
+
+    <!-- If a search term was supplied, show message to suggest to re-try serach -->
+    {% if request.args.get('q') %}
+        <p>Try limiting or removing your search terms.</p>
+
+    <!-- No countries are in system, show sign-up message-->
+    {% else %}
+        <p>There are no countries present.</p>
+
+    {% endif %}
+
+<!-- Render table -->
+{% else %}
+    <h2>All Countries ({{ count }})</h2>
+
+    {% call f.form_tag('admin.countries_bulk_delete') %}
+    
+        <!-- Save search term -->
+        <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
+        
+        {{
+            tables.simple_table(
+                table=countries.items,
+                edit_endpoint='admin.countries_edit',
+                show_added_date=True,
+                show_updated_date=True,
+                include_checkbox=True,
+                bulk_form=bulk_form
+            )
+        }}
+        
+    {% endcall %}
+
+    <!-- Deals with pages -->
+    {{ items.paginate(countries) }}
+
+{% endif %}
+{% endblock %}

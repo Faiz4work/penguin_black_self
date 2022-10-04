@@ -1,0 +1,31 @@
+.video_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.all_box{
+    display: flex;
+    flex-direction: row;
+    margin: 15px 0;
+}
+.highlight{
+    display: flex;
+    flex-direction: column;
+    max-width: 30%;
+    min-width: 30%;
+    height: 150px;
+    margin: 10px 10px;
+}
+ 
+ .highlight> video{
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    min-width: 100%;
+    border: 3px outset #c0e0f4;
+    padding: 2px;
+    margin: 8px 0;
+}

@@ -1,0 +1,144 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+<!-- Get plan name from URL parameter -->
+{% set id = request.args.get('id', '') %}
+
+<!-- Boolean to see if the endpoint is 'billing.create' or 'billing.update_payment_method' -->
+{% set is_create = request.endpoint.endswith('create') %}
+
+<!-- Variables for new billing -->
+{% if is_create %}
+
+    <!-- Endpoints -->
+    {% set endpoint = 'billing.create' %}
+    
+    <!-- Translations -->
+    {% set title = _('Enter payment information') %}
+    {% set button = _('Process payment') %}
+    {% set text1 = _('subscription') %}
+    {% set text2 = _('This plan costs') %}
+
+<!-- Variables for updating billing -->
+{% else %}
+
+    <!-- Endpoints -->
+    {% set endpoint = 'billing.update_payment_method' %}
+    
+    <!-- Translations -->
+    {% set title = _('Update payment information') %}
+    {% set button = _('Update payment method') %}
+
+{% endif %}
+
+<!-- Translations -->
+{% set card_number = _('Card number') %}
+{% set expiration_date = _('Expiration date') %}
+{% set cvc = _('CVC') %}
+
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+
+{% block body %}
+
+<!-- 
+...
+
+`payment_form` is being targeted by the JS to submit to Stripe
+-->
+{% call f.form_tag(endpoint, fid='payment_form') %}
+        
+    <!-- Subscription deteails -->
+    <legend>
+        
+        <!-- When creating subscription -->
+        <br/>
+        {% if is_create %}
+            <h2>{{ plan.name }} {{ text1 }}</h2>
+            <span>
+                {{ text2 }}
+                ${{ plan.amount | format_currency }} {{ plan.currency | upper }} / {{ plan.recurring.interval }}
+            </span>
+        
+        <!-- When updating billing info -->
+        {% else %}
+            <h2>{{ title }}</h2>
+            
+        {% endif %}
+    </legend>
+
+    <!-- Sets up alerts -->
+    <div class="alert alert-small alert-danger payment-errors"></div>
+
+    <!-- Name on card -->
+    <br/>
+    {% call f.form_group(form.name, autofocus='autofocus') %}
+    {% endcall %}
+
+    <!-- Card number date -->
+    <br/>
+    <div class="form-group">
+        <label for=""><strong>{{ card_number }}</strong></label>
+        <input data-stripe="number" class="form-control" value="{{ '****' + card_last4 if card_last4 }}" />
+    </div>
+
+    <!-- Expiration date -->
+    <br/>
+    <div class="form-group">
+        <label for="" class="block"><strong>{{ expiration_date }}</strong></label><br />
+        
+        <select data-stripe="exp-month" class="form-control cc-details">
+            <option value=""></option>
+            
+            <!-- Showing months -->
+            {% for month in range(1,13) %}
+                <option value="{{ '%02d' % month }}">
+                    {{ '%02d' % month }}
+                </option>
+            {% endfor %}
+        </select>
+        
+        <select data-stripe="exp-year" class="form-control cc-details">
+            <option value=""></option>
+            
+            <!-- Showing years (current year - 15 years later) -->
+            {% for year in range(current_year(), current_year()+15) %}
+                <option value="{{ '%04d' % year }}">
+                    {{ '%04d' % year }}
+                </option>
+            {% endfor %}
+        </select>
+        
+    </div>
+
+    <!-- CVC -->
+    <br/>
+    <div class="form-group">
+        <label for="">
+            <strong>
+                <abbr title="3-4 digit code on the back">{{ cvc }}</abbr>
+            </strong>
+        </label>
+        <input data-stripe="cvc" class="form-control cc-details" />
+    </div>
+
+    <!-- Submit POST request -->
+    <br/>
+    <button type="submit">{{ button }}</button>
+
+    <br><br>
+    All major payment methods supported by Stripe
+
+    <br><br>
+    <span class="small">Protected by 256-bit SSL encryption</span>
+
+{% endcall %}
+
+<!-- Back link -->
+<br>
+<a href="{{ url_for('user.settings') }}">Cancel</a>
+
+{% endblock %}

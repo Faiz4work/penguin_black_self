@@ -1,0 +1,22 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/billing.html' as billing %}
+
+
+{% block title %}
+Billing details and history
+{% endblock %}
+
+
+{% block body %}
+
+<!-- Next invoice -->
+{{ billing.upcoming_invoice(upcoming) }}
+
+<!-- Past invoices -->
+{{ billing.invoices(paginated_invoices) }}
+
+<!-- Back link -->
+<br><br>
+<a href="{{ url_for('user.settings') }}">Back to settings</a>
+
+{% endblock %}

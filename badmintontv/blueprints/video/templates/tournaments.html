@@ -1,0 +1,38 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+
+{% block title %}
+Tournaments
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tournaments.css')}}">
+
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+<h2>Tournaments by Year</h2>
+
+<!-- Select year -->
+
+<div class="video_box2">
+{% for year in years %}
+    <div class="tournament_box2">
+    <a href="{{ url_for('video.tournament_to_matches', query=year)}}">
+        {{ year }}
+    </a>
+    <br><br>
+    </div>
+{% endfor %}
+</div>
+
+</div>
+</div>
+</div>
+
+{% endblock %}

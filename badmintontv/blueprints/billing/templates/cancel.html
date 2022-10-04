@@ -1,0 +1,38 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+
+{% block title %}
+You are about to cancel your subscription
+{% endblock %}
+
+
+{% block body %}
+
+<!-- ... -->
+{% call f.form_tag('billing.cancel') %}
+
+    <!-- Text to user -->
+    <h2>Cancel subscription</h2>
+    <p>
+        <strong>Hi {{ current_user.name }}</strong>,<br />
+        Before you cancel your subscription, please note that:
+    </p>
+    <ul>
+        <li>You will no longer be billed</li>
+        <li>You won't be able to watch any videos</li>
+        <li>Dark mode will be disabled</li>
+        <li>Your account <strong>will</strong> remain open</li>
+        <li>You may subscribe again in the future</li>
+    </ul>
+
+    <!-- Button for POST request -->
+    <button type="submit">Cancel Subscription</button>
+
+    <!-- "Back Button" - URL to settings page -->
+    <br><br>
+    <a href="{{ url_for('user.settings') }}">Nevermind</a>
+
+{% endcall %}
+
+{% endblock %}

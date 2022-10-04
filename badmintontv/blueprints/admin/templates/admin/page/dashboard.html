@@ -1,0 +1,96 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/stats.html' as stats %}
+{% import 'macros/video.html' as video %}
+{% import 'macros/form.html' as f with context %}
+
+
+{% block title %}
+Admin - Dashboard
+{% endblock %}
+
+
+{% block body %}
+
+<h2>Admin Dashboard</h2>
+
+<!-- Domain Name -->
+<h2>Domain Name</h2>
+<a href="http://{{ config.get('SERVER_NAME') }}">
+    http://{{ config.get('SERVER_NAME') }}
+</a>
+
+<hr>
+
+<!-- Button to add new videos -->
+{% call f.form_tag('admin.dashboard') %}
+
+    <h2>Add new videos</h2>
+
+    <button type="submit">Add</button>
+
+{% endcall %}
+
+<!-- Display metadata on added videos -->
+{% if add %}
+    <h4>No new videos found</h4>
+{% elif new_videos_metadata | length > 0 %}
+    <h4>{{ num_new_videos }} new videos found</h4>
+    {{ video.display_videos_added(new_videos_metadata) }}
+{% endif %}
+
+<hr>
+
+<h2>Subscriptions</h2>
+
+<h4>Summary</h4>
+
+<!-- Total number of subscriptions -->
+<span>
+    Total number of subscriptions: 
+    {{ group_and_count_plans.total }}
+</span>
+
+<!-- Percentage of users that are subscribed -->
+<br><br>
+{% set percent = ((group_and_count_plans.total / group_and_count_users.total) * 100) | round %}
+<span>
+    Percentage of users subscribed:
+    {{ percent }}% 
+</span>
+
+<h4>Plan Split</h4>
+{{ stats.get_stats(group_and_count_plans, prices=prices) }}
+
+<hr/>
+
+<h2>Users</h2>
+
+<h4>Summary</h4>
+
+<!-- Total number of users -->
+<span>
+    Total number of users: 
+    {{ group_and_count_users.total }}
+</span>
+
+<h4>Roles</h4>
+{{ stats.get_stats(group_and_count_users) }}
+
+<h4>Region</h4>
+{{ stats.get_stats(group_and_count_region) }}
+
+<h4>Locale</h4>
+{{ stats.get_stats(group_and_count_locale, LANGUAGES=LANGUAGES) }}
+
+<hr>
+
+<h2>Views</h2>
+
+<span>
+    Total number of views: 
+    {{ group_and_count_view.total }}
+</span>
+
+{{ stats.get_stats(group_and_count_view) }}
+
+{% endblock %}

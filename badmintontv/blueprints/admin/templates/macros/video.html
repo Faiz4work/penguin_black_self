@@ -1,0 +1,36 @@
+{# 
+Displays tournament, match, highlights type 
+
+Params:
+    added_videos_metadata (dict): Dictionary of lists of form:
+        {
+            'tournament': [
+                {
+                    'match': ...,
+                    'type': ...,
+                },
+                ...
+            }
+            ],
+            ...
+        }
+#}
+{%- macro display_videos_added(added_videos_metadata) -%}
+
+    {% for tournament, videos in added_videos_metadata.items() %}
+
+        <h4>{{ tournament }}</h4>
+
+        {% for metadata in videos %}
+        
+            {% set match = metadata['name'] %}
+            {% set type = metadata['highlights_type'] %}
+            
+            [{{ type }}] {{ match }}
+            <br><br>
+        
+        {% endfor %}
+        
+    {% endfor %}
+
+{%- endmacro -%}

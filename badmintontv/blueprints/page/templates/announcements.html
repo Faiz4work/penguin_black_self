@@ -1,0 +1,26 @@
+{% extends 'layouts/app.html' %}
+
+
+{% block title %}
+Announcements
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/announcement.css')}}">
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+    <div class="announcement_box">
+        <div class="all_box">
+            <br>
+            There are no announcements to show.
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+{% endblock %}

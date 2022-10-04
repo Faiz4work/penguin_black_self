@@ -1,0 +1,130 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/items.html' as items %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/user.html' as account %}
+
+
+{% block title %}
+Admin - Invoices / List
+{% endblock %}
+
+
+{% block body %}
+
+<br>
+{{ f.search('admin.invoices') }}
+
+{% if invoices.total == 0 %}
+    <h3>No results found</h3>
+
+    {% if request.args.get('q') %}
+        <p>Try limiting or removing your search terms.</p>
+
+    {% else %}
+        <p>There are no invoices present.</p>
+    
+    {% endif %}
+
+{% else %}
+
+    <h2>All Invoices</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="col-header">
+                    {{ items.sort('created_on', 'Date') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('user_id', 'User') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('method', 'Method') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('subscription', 'Subscription') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('description', 'Description') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('period_start_on', 'Starting date') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('period_end_on', 'Ending date') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('total', 'Total') }}
+                </th>
+                <th class="col-header">
+                    {{ items.sort('invoice', 'Invoice Details') }}
+                </th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for invoice in invoices.items %}
+            <tr>
+                <td>
+                    <time class="from-now" data-datetime="{{ invoice.created_on }}">
+                        {{ invoice.created_on }}
+                    </time>
+                </td>
+                
+                <td>
+                    <a href="{{ url_for('admin.users_edit', id=invoice.users.id) }}">
+                        <div class="pull-left">
+                            {{ account.role_icon_for(invoice.users) }}
+                        </div>
+                        <h4>{{ invoice.users.username }}</h4>
+                        <p>{{ invoice.users.email }}</p>
+                    </a>
+                </td>
+                
+                <td class='small'>
+                    {{ invoice.brand }} 
+                    <br>
+                    **** {{ invoice.last4 }}
+                </td>
+                
+                <td class='small'>
+                    {{ invoice.plan_name }}
+                    <br>
+                    {{ invoice.plan_id }}
+                </td>
+                
+                <td class='small'>{{ invoice.description }}</td>
+                
+                <td class='small'>
+                    <time class="short-date" data-datetime="{{ invoice.period_start_on }}">
+                        {{ invoice.period_start_on }}
+                    </time>
+                </td>
+                
+                <td class='small'>
+                    <time class="short-date" data-datetime="{{ invoice.period_end_on }}">
+                        {{ invoice.period_end_on }}
+                    </time>
+                </td>
+                
+                <td title="{{ invoice.currency }}" class='small'>
+                    ${{ invoice.total | format_currency }}
+                </td>
+                
+                <td class='small'>
+                    <a href="{{ invoice.download_url }}">
+                        {{ invoice.invoice_number }}
+                    </a>
+                    <br>
+                    {{ invoice.receipt_number }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {{ items.paginate(invoices) }}
+
+{% endif %}
+
+{% endblock %}

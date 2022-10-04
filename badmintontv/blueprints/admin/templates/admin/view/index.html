@@ -1,0 +1,52 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/items.html' as items %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/user.html' as account %}
+{% import 'macros/tables.html' as tables %}
+
+
+{% block title %}
+Admin - Views / List
+{% endblock %}
+
+
+{% block body %}
+
+
+<!-- Search form -->
+<br>
+{{ f.search('admin.views') }}
+
+<!-- Case where there are no records -->
+{% if views.total == 0 %}
+    <h2>No results found</h2>
+
+    <!-- If a search term was supplied, show message to suggest to re-try serach -->
+    {% if request.args.get('q') %}
+        <p>Try limiting or removing your search terms.</p>
+
+    <!-- No views are in system, show sign-up message-->
+    {% else %}
+        <p>There are no views present.</p>
+
+    {% endif %}
+
+<!-- Render table -->
+{% else %}
+
+    <h2>All Views ({{ count }})</h2>
+    
+    {{
+        tables.simple_table(
+            table=views.items,
+            edit_endpoint='admin.videos_edit',
+            show_added_date=True
+        )
+    }}
+
+    <!-- Deals with pages -->
+    {{ items.paginate(views) }}
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,23 @@
+.country_box{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: left;
+    width: 100%;
+}
+
+.all_box{
+    /* display: flex; */
+    max-width: 23%;
+    min-width: 23%;
+    border: 3px outset #c0e0f4;
+    padding: 5px;
+    text-align: center;
+    margin: 20px 10px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    box-shadow: 1px 1px 15px #c3dbea;
+    font-size: 18px;
+    font-family: sans-serif;
+}

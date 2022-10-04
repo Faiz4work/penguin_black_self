@@ -1,0 +1,226 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/tables.html' as tables %}
+
+
+{% block title %}
+Admin - Users / Update
+{% endblock %}
+
+
+{% block body %}
+    
+<h2>{{ user.email }}</h2>
+
+<p>
+Confirmed:
+{% if user.confirmed %}
+    Yes
+{% else %}
+    No
+{% endif %}
+</p>
+
+<p>ID: {{ user.id }}</p>
+<p>Region: {{ user.current_sign_in_region }}</p>
+<p>Language: {{ LANGUAGES[user.locale] }}</p>
+
+<!-- Created on -->
+<label>Registered:</label>
+<time class="from-now" data-datetime="{{ user.created_on }}">
+    {{ user.created_on }}
+</time>
+
+<!-- Last updated -->
+<br><br>
+<label>Last Updated:</label>
+<time class="from-now" data-datetime="{{ user.updated_on }}">
+    {{ user.updated_on }}
+</time>
+
+{% call f.form_tag(endpoint='admin.users_edit', **{'id': user.id}) %}
+
+    <!-- Username -->
+    <br>
+    {% call f.form_group(form.username, autofocus='autofocus') %}
+    {% endcall %}
+
+    <!-- Role -->
+    <br>
+    {% call f.form_group(form.role) %}
+    {% endcall %}
+
+    <!-- Active/Disables -->
+    <br>
+    {% call f.form_group(form.active) %}
+    {% endcall %}
+    
+    <!-- Button for POST request -->
+    <br>
+    <button type="submit">Save</button>
+
+    <!-- Cancel link -->
+    <br><br>
+    <a href="{{ url_for('admin.users') }}">Cancel</a>
+
+{% endcall %}
+
+<hr>
+
+<h3>Login activity</h3>
+
+<!-- Link to invoices (with user's email as search term) -->
+<a href="{{ url_for('admin.views', q=user.username)}}">Check Views</a>
+<br><br>
+
+<!-- Number of times signed-in -->
+<dt>Sign in count</dt>
+<dd>{{ user.sign_in_count }}</dd>
+
+<!-- Current sign-in date -->
+<br>
+<dt>Current sign in date</dt>
+<dd>
+    {% if user.current_sign_in_on %}
+        <time class="from-now" data-datetime="{{ user.current_sign_in_on }}">
+            {{ user.current_sign_in_on }}
+        </time>
+    {% else %}
+        None
+    {% endif %}
+</dd>
+
+<!-- Current sign-in IP address -->
+<br>
+<dt>Current sign in IP address</dt>
+<dd>{{ user.current_sign_in_ip }}</dd>
+
+<!-- Previous sign-in date -->
+<br>
+<dt>Previous sign in date</dt>
+<dd>
+    {% if user.last_sign_in_on %}
+        <time class="from-now" data-datetime="{{ user.last_sign_in_on }}">
+            {{ user.last_sign_in_on }}
+        </time>
+    {% else %}
+        None
+    {% endif %}
+</dd>
+
+<!-- Previous sign-in IP address -->
+<br>
+<dt>Previous sign in IP address</dt>
+<dd>{{ user.last_sign_in_ip }}</dd>
+
+<hr>
+
+<h3>Subscription details</h3>
+
+<dl>
+    
+    <!-- Link to invoices (with user's email as search term) -->
+    <a href="{{ url_for('admin.invoices', q=user.email)}}">View billing details</a>
+    
+    <!-- If a user is subscribed, and they have a credit card -->
+    {% if user.subscription and user.card %}
+    
+        <br><br>
+        <dt>Subscribed</dt>
+        <dd>
+            
+            <!-- When subscription was created -->
+            <time class="from-now" data-datetime="{{ user.subscription.created_on }}">
+                {{ user.subscription.created_on }}
+            </time>
+            
+        </dd>
+        
+        <br>
+        <dt>Plan</dt>
+        <dd>
+            
+            <!-- Plan name -->
+            {% set plan_name = prices[user.subscription.plan_id]['name'] %}
+            {% set new_plan_name = prices[current_user.subscription.new_plan_id]['name']%}
+            {{ plan_name }} 
+            {% if plan_name != new_plan_name %}
+                (set to change to "{{ new_plan_name }}" after this billing cycle)
+            {% endif %}
+            
+            <!-- Current billing cycle -->
+            <br>
+            <time class="short-date" data-datetime="{{ user.subscription.current_period_start }}">
+                {{ user.subscription.current_period_start }}
+            </time>
+            -
+            <time class="short-date" data-datetime="{{ user.subscription.current_period_end }}">
+                {{ user.subscription.current_period_end }}
+            </time>
+            
+            <!-- Stripe Customer ID -->
+            <br>
+            {{ user.payment_id }}
+            
+            <!-- Stripe Subscription ID -->
+            <br>
+            {{ user.subscription.subscription_id }}
+            
+            <!-- Stripe Subscription Schedule ID -->
+            <br>
+            {{ user.subscription.subscription_schedule_id }}
+            
+        </dd>
+        
+        <br>
+        <dt>Card</dt>
+        <dd>
+            
+            <!-- Credit card details -->
+            {{ user.name }}
+            <br/>
+            {{ user.card.brand }}
+            <br/>
+            **** {{ user.card.last4 }}
+            <br/>
+            ({{ user.card.exp_date.strftime('%m/%Y') }})
+        </dd>
+        
+        <!-- Button to cancel subscription -->
+        <br>
+        {% call f.form_tag('admin.users_cancel_subscription') %}
+        
+            <!-- Pass user ID -->
+            <input type="hidden" id="id" name="id" value="{{ user.id }}" />
+            
+            <!-- Button -->
+            <button type="submit" class="btn btn-danger">Cancel subscription</button>
+            
+        {% endcall %}
+    
+    <!-- Other case -->
+    {% else %}
+    
+        <!-- If user cancelled their subscription before -->
+        {% if user.cancelled_subscription_on %}
+        
+            <dt>Cancelled</dt>
+            <dd>
+                
+                <!-- When the subscription was cancelled -->
+                <time class="from-now" data-datetime="{{ user.cancelled_subscription_on }}">
+                    {{ user.cancelled_subscription_on }}
+                </time>
+                
+            </dd>
+        
+        <!-- Default message -->
+        {% else %}
+            <p>This user has never subscribed.</p>
+            
+        {% endif %}
+    
+    {% endif %}
+</dl>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'layouts/app.html' %}
+
+
+{% block title %}
+badmintontv.com
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_home.css')}}">
+
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+    <h2 style="text-decoration:underline ;">Home</h2>            
+        badmintontv.com brings a new way to enjoy badminton highlight videos from both the latest and past tournaments.
+        We offer a large selection of highlights from the world-class tournaments, dating back to 2018. 
+
+<div class="video_box">
+    <div class="all_box">  
+        {% set highlights_dir = '/badmintontv/highlights'%}
+        {% set tourament_name = '20220316-20220320 YONEX All England Open Badminton Championships 2022'%}
+        {% set match_name = '20220318 - YONEX All England Open 2022 _ Lee Zii Jia (MAS) [6] vs Kento Momota (JPN) [2] _ Quarterfinals'%}
+
+    <div class="highlight">
+        <b>Highlights</b>
+        
+        {% set highlights_name = '[Highlights] ' + match_name %}
+        {% set video_path = [highlights_dir, tourament_name, match_name, highlights_name] | join('/') %}
+        <video width="720" controls>
+            <source src={{ video_path }} type="video/mp4"/>
+            <source src={{ video_path }} type="video/ogg"/>
+            Your browser does not support the video tag.
+        </video>     
+        
+    </div>  
+    
+    <div class="highlight">
+        <b>Highlights</b>
+        
+        {% set highlights_name = '[Highlights] ' + match_name %}
+        {% set video_path = [highlights_dir, tourament_name, match_name, highlights_name] | join('/') %}
+        <video width="720" controls>
+            <source src={{ video_path }} type="video/mp4"/>
+            <source src={{ video_path }} type="video/ogg"/>
+            Your browser does not support the video tag.
+        </video>
+    </div>
+        
+    
+</div>
+
+
+<div class="all_box">
+
+    {% set highlights_dir = '/badmintontv/highlights'%}
+    {% set tourament_name = '20211123-20211128 Indonesia Open 2021'%}
+    {% set match_name = '20211126 - Indonesia Open 2021 _ Loh Kean Yew (SGP) vs Hans-Kristian Solberg Vittinghus (DEN) _ Quarterfinals'%}
+    
+    <div class="highlight">
+
+        <b>Extended Highlights</b>
+        
+        {% set highlights_name = '[Extended Highlights] ' + match_name %}
+        {% set video_path = [highlights_dir, tourament_name, match_name, highlights_name] | join('/') %}
+        <video width="720" controls>
+            <source src={{ video_path }} type="video/mp4"/>
+            <source src={{ video_path }} type="video/ogg"/>
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="highlight">
+        <b>Extended Highlights</b>
+        
+        {% set highlights_name = '[Extended Highlights] ' + match_name %}
+        {% set video_path = [highlights_dir, tourament_name, match_name, highlights_name] | join('/') %}
+        <video width="720" controls>
+            <source src={{ video_path }} type="video/mp4"/>
+            <source src={{ video_path }} type="video/ogg"/>
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

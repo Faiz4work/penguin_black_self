@@ -1,0 +1,52 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+
+{% block title %}
+Contact Us
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contact_us.css')}}">
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+
+<!-- ... -->
+<div class="video_box">
+
+    {% call f.form_tag('contact.index') %}
+    
+    <h2>Contact Us</h2>
+    
+    <p>We're only able to respond to messages in English.</p>
+    
+    <!-- Form for email -->
+    <br>
+    {% call f.form_group(form.email, placeholder='E-mail') %}
+    {% endcall %}
+    
+    <!-- Form for subject -->
+    <br><br>
+    {% call f.form_group(form.subject, placeholder='Subject') %}
+    {% endcall %}
+    
+    <!-- Form for text -->
+    <br><br>
+    {% call f.form_group(form_field=form.text, placeholder='Message', rows='12') %}
+    {% endcall %}
+    
+    <br><br>
+    <button type="submit">Send</button>
+    
+    {% endcall %}
+</div>
+
+</div>
+</div>
+</div>
+{% endblock %}

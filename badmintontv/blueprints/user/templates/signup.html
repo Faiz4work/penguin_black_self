@@ -1,0 +1,44 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+
+{% block title %}
+Sign up for a new account
+{% endblock %}
+
+
+{% block body %}
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+{% call f.form_tag('user.begin_signup') %}
+
+    <h2>Sign up here</h2>
+
+    <br>
+    {% call f.form_group(form.username, placeholder='Username', autofocus='autofocus') %}
+    {% endcall %}
+
+    <br><br>
+    {% call f.form_group(form.email, placeholder='Email address') %}
+    {% endcall %}
+
+    <br><br>
+    {% call f.form_group(form.password) %}
+    {% endcall %}
+
+    <br><br>
+    <button type="submit">Register</button>
+
+    <br><br>
+    <a href="{{ url_for('user.login') }}">Looking to sign in?</a>
+
+{% endcall %}
+    
+</div>
+</div>
+</div>
+
+{% endblock %}

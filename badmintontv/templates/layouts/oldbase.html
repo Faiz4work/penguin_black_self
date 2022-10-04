@@ -1,0 +1,74 @@
+{% import 'macros/flash.html' as flash with context %}
+{% import 'macros/billing.html' as billing with context %}
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Allows us to easily read CSRF token incase of Ajax-powered form -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <title>
+            {% block title %}{% endblock %}
+        </title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+        
+        <!-- JQuery -->
+        <script src="https://code.jquery.com/jquery-1.12.2.min.js" integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk=" crossorigin="anonymous"></script>
+        
+        <!-- Pulls in Stripe's JS code, so we can contact them via JS -->
+        <script src="https://js.stripe.com/v2/"></script>
+        
+        <!-- Get Google Analytics UA from configs -->
+        {% if config['ANALYTICS_GOOGLE_UA'] %}
+        
+            <!-- Set-up Google Analytics (Copy-Pasted from Google) -->
+            <script>
+                (function(i, s, o, g, r, a, m) {
+                    i['GoogleAnalyticsObject'] = r;
+                    i[r] = i[r] || function() {
+                        (i[r].q = i[r].q || []).push(arguments)
+                    }, i[r].l = 1 * new Date();
+                    a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                    a.async = 1;
+                    a.src = g;
+                    m.parentNode.insertBefore(a, m)
+                })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+                ga('create', "{{ config['ANALYTICS_GOOGLE_UA'] }}", 'auto');
+                ga('send', 'pageview');
+            </script>
+        {% endif %}
+        
+    </head>
+
+    <body>
+
+        <!-- Used to show flash messages -->
+        {{ flash.render() }}
+        
+        <!-- Shows a site-wide alert if a user's credit card will expire soon -->
+        {{ billing.card_expiring_warning() }}
+
+        {% block header %}{% endblock %}
+        
+        {% block body %}{% endblock %}
+
+    </body>
+    
+    <footer>{% block footer %}{% endblock %}</footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='scripts/vendor/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/vendor/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/vendor/eonasdan-bootstrap-datetimepicker.4.14.30.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+
+</html>

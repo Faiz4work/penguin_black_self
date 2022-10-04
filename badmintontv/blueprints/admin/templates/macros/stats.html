@@ -1,0 +1,53 @@
+{# 
+Displays stats for a group and counts from the DB
+
+Params:
+    group_and_count (dict): Dictionary with query and count of form,
+        {
+            'query': query,
+            'total': model.query.count()
+        }
+    prices (dict):      Mapping of Stripe plans 
+    LANGUAGES (dict):   Mapping of 2-letter babel language to full name
+#}
+{%- macro get_stats(group_and_count, prices={}, LANGUAGES={}) -%}
+
+<!-- Loop through query result -->
+{% for count, name in group_and_count.query %}
+
+    <!-- Only display info if there's at least 1 count -->
+    {% if count != 0 %}
+    
+        <!-- Calculate percentage for this group -->
+        {% set percent = ((count / group_and_count.total) * 100) | round %}
+
+        <!-- Display info -->
+        <h5>
+            
+            Group: 
+            
+            <!-- Plans -->
+            {% if prices != {} and LANGUAGES == {} %}
+                {{ prices[name]['name']}}
+                
+            <!-- Languages -->
+            {% elif prices == {} and LANGUAGES != {} %}
+                {{ LANGUAGES[name] }}
+            
+            <!-- Other -->
+            {% else %} 
+                {{ name }}
+
+            {% endif %}
+            
+            <br>
+            Count: {{ count }}
+            <br>
+            Percentage: {{ percent }}%
+        </h5>
+        
+    {% endif %}
+    
+{% endfor %}
+
+{%- endmacro -%}

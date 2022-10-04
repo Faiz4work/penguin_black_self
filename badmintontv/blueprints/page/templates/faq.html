@@ -1,0 +1,136 @@
+{% extends 'layouts/app.html' %}
+
+
+{% block title %}
+FAQ
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/faq.css')}}">
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+    <div class="video_boxs">
+        <div class="box_1">
+
+<h1>FAQ</h1>
+
+<h2>General</h2>
+
+<h4>What is badmintontv.com?</h4>
+
+badmintontv.com consists of a small group of passionate badminton fans who want to improve the landscape of badminton highlight 
+videos. 
+We weren't satisfied with the current landscape of the badminton highlights scene, and therefore wanted to improve it by creating 
+our own highlights it with the badminton community, in hopes that everyone can enjoy 
+the videos, just like we do. 
+
+<h4>What can I watch on badmintontv.com?</h4>
+
+Currently, we have multiple highlight videos of all tournaments (with a few exclusions, listed below) uploaded to the official BWF 
+YouTube channel, dating back to the beginning of 2018. 
+
+<h4>What is the benefits of subscription?</h4>
+
+With subscription, you can watch the complete archive on our site, where each match consists of a 
+"Highlights" and "Extended Highlights" video. Details of the subscription fee can be found
+<a href="{{ url_for('billing.pricing') }}">
+    here
+</a>
+.
+
+<h4>Why is there no free subscription tier?</h4>
+
+Due to the size of our servers, and our limited funding, it's simply impossible to offer a limited, free experience of the site, as it's 
+a real possibility of the site crashing due to too much demand. We aim to list our subscription fees as afforable as possible, 
+so that many people have the option of joining.
+
+<h4>What is the difference between "Highlights" and "Extended Highlights"?</h4>
+
+"Highlights" contains the best rallies of the match, while "Extended Highlights" is a compilation of all rallies, point-by-point. 
+
+<h4>How long after a match will the highlights be available</h4>
+
+We aim to upload highlight videos within 24 hours after the live match finishes. 
+However, the timing also depends on the location and time zone of the tournament, as our AI is not 100% automated, and we 
+are only a small team of people.
+
+<h4>Which tournaments are excluded?</h4>
+
+The following tournaments are excluded from the site, for various reasons:
+<li>Olympics</li>
+<li>Asian Games</li>
+<li>European Games</li>
+<li>Commonwealth Games</li>
+<li>SEA Games</li>
+<li>A handful of lower-ranking BWF tournaments</li>
+
+<h4>Why does the archive only begin in 2018?</h4>
+
+Due to current technology limitations, our AI can't process lower-quality videos. Starting 2018, most matches were high enough quality 
+for it to process, hence why we decided to start the archive there. 
+
+<h4>How do I search for matches?</h4>
+
+Our site does not have a dedicated search bar. Instead, you can find the matches using the navigation bar 
+to filter based on tournament, year, player and country.
+
+This feature may be added in the future. 
+
+<h4>Can I watch on a phone, tablet and computer?</h4>
+
+badmintontv.com is accessible on almost every modern browser, and on almost every modern device with an internet connection.
+If you have a reasonably recent phone, tablet or computer, you should be fine.
+<br><br>
+You will need a solid and stable broadband internet connection in order to watch videos. 
+There are a few sample videos on the home page for you to watch and see if your device and internet
+connection meet our requirement.
+<br><br>
+If your internet connection is not fast enough, you can try lowering the resolution of the video. 
+
+
+<h2>Payment</h2>
+
+<h4How is my payment data protected?</h4>
+Payment is made via credit/debit cards (supported by Stripe). 
+Here is more info about how they protect your data: 
+<a href="https://stripe.com/docs/security/stripe">https://stripe.com/docs/security/stripe</a>
+
+
+<h2>Account</h2>
+
+<h4>How do I reset my password</h4>
+
+Please go to your settings, then click "Update email and password".
+Alternatively, you can click 
+<a href="{{ url_for('user.update_credentials') }}">
+    here
+</a> 
+to go there directly.
+
+<h4>Do subscriptions auto-renew?</h4>
+
+Yes, your subscription will auto-renewed, if it isn't cancelled before the re-new date.
+
+<h4>How do I cancel my subscription?</h4>
+
+To cancel your subscription, please sign-in to your account, then click "Cancel Subscription".
+Alternatively, you can click 
+<a href="{{ url_for('billing.cancel') }}">
+    here
+</a>
+to go there directly. Please note that your subscription will be immediately cancelled, and no refunds will be offered.
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+
+{% endblock %}

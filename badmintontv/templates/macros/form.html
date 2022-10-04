@@ -1,0 +1,175 @@
+{# 
+Render a form field's label with visual aid to see if it's required
+
+Params:
+    form_field: Form field 
+#}
+{%- macro field_label(form_field) -%}
+<label for="{{ form_field.id }}">
+    
+    {# Set required fields bold #}
+    {%- if form_field.flags.required -%}
+        <strong>{{ form_field.label.text }}</strong>
+    
+    {# Set non-required fields as normal text #}
+    {%- else %}
+        {{ form_field.label.text }}
+    {%- endif %}
+    
+</label>
+{%- endmacro -%}
+
+{# ---------------------------------------------------------------- #}
+
+{# 
+Render a form field's errors
+
+Params:
+    form_field: Form field 
+#}
+{%- macro field_errors(form_field) -%}
+
+{% if form_field.errors %}
+<ul class="list-unstyled text-danger field-error">
+    
+    {% for error in form_field.errors %}
+        <li>{{ error | e }}</li>
+    {% endfor %}
+    
+</ul>
+{% endif %}
+
+{%- endmacro -%}
+
+{# ---------------------------------------------------------------- #}
+
+{# 
+Render a form field with CSS 
+
+Params:
+    form_field:    Form field 
+    placeholder:   Text placeholder in field
+#}
+{%- macro field(form_field, css_class='form-control') -%}
+
+{{ form_field(class=css_class, **kwargs) }}
+
+{%- endmacro -%}
+
+{# ---------------------------------------------------------------- #}
+
+{# 
+Render a checkbox field
+
+Params:
+    form_field: Form field 
+#}
+{%- macro checkbox_field(form_field) -%}
+
+{{ form_field(type='checkbox', **kwargs) }}
+{{ form_field.label }}
+
+{%- endmacro -%}
+
+{# ---------------------------------------------------------------- #}
+
+{# 
+Render a form group with errors for various field types 
+
+Params:
+    f:          Form field 
+    css_class:  Optional CSS class
+#}
+{%- macro form_group(form_field, css_class='') -%}
+
+{# If there's an error, add "has-error" class to CSS #}
+{% if form_field.errors %}
+    {% set css_class = css_class + ' has-error ' + kwargs.pop('class', '') %}
+{% endif %}
+
+{# Render checkbox slightly different than other field types #}
+{% if form_field.type == 'BooleanField' %}
+    <div class="checkbox {{ css_class }}">
+        {{ checkbox_field(form_field, **kwargs) }}
+
+{# Standard Bootstrap form-group div #}
+{% else %}
+    <div class="form-group {{ css_class }}">
+        
+        {# [MACRO] render label #}
+        {{ field_label(form_field) }}
+        
+        {# [MACRO] render field #}
+        {{ field(form_field, **kwargs) }}
+
+{% endif %}
+
+{# [MACRO] render errors #}
+{{ field_errors(form_field) }}
+
+{# [MACRO] ... #}
+{{ caller () }}
+
+</div>
+
+{%- endmacro %}
+
+{# ---------------------------------------------------------------- #}
+
+{# 
+Render a form tag that contains a CSRF token and all hidden fields
+
+Params:
+    endpoint:     Endpoint 
+    fid:          Form ID 
+    css_class:    CSS class for styling 
+    method:       GET, POST, etc. 
+    kwargs:       Additional information needed to access the endpoint 
+#}
+{%- macro form_tag(endpoint, fid='', css_class='', method='post') -%}
+
+{# HTML form tag #}
+<form action="{{ url_for(endpoint, **kwargs) }}" method="{{ method }}" id="{{ fid }}" class="{{ css_class }}" role="form">
+    
+    {# [MACRO] Shortcut from WTForms that renders all hidden form fields (including CSRF token for protection) #}
+    {{ form.hidden_tag }}
+    
+    {# [MACRO] Render code passed in #}
+    {{ caller () }}
+    
+</form>
+
+{%- endmacro -%}
+
+{# ---------------------------------------------------------------- #}
+
+{# 
+Render a form for searching 
+
+Note: Calling `form_tag` with a GET request will allow us to bookmark and 
+share search results, since the search term will be included in the URL 
+
+The search term's,
+- `id` will be 'q'
+- `value` will be either the search term, or an empty string
+
+Params:
+    endpoint:   Endpoint 
+#}
+{%- macro search(endpoint) -%}
+
+{% call form_tag(endpoint, method='get') %}
+    
+    <label for="q"></label>
+    
+    <div class="input-group md-margin-bottom">
+        
+        <input type="text" class="form-control" id="q" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by typing, then press enter...">
+        
+        <span class="input-group-addon">
+            <i class="fa fa-fw fa-search"></i>
+        </span>
+    </div>
+{% endcall %}
+
+{%- endmacro -%}

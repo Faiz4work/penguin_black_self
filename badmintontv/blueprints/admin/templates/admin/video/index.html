@@ -1,0 +1,60 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/items.html' as items %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/user.html' as account %}
+{% import 'macros/tables.html' as tables %}
+
+
+{% block title %}
+Admin - Videos / List
+{% endblock %}
+
+
+{% block body %}
+
+<!-- Search form -->
+<br>
+{{ f.search('admin.videos') }}
+
+<!-- Case where there are no records -->
+{% if videos.total == 0 %}
+    <h2>No results found</h2>
+
+    <!-- If a search term was supplied, show message to suggest to re-try serach -->
+    {% if request.args.get('q') %}
+        <p>Try limiting or removing your search terms.</p>
+
+    <!-- No videos are in system, show sign-up message-->
+    {% else %}
+        <p>There are no videos present.</p>
+
+    {% endif %}
+
+<!-- Render table -->
+{% else %}
+    <h2>All Videos ({{ count }})</h2>
+
+    {% call f.form_tag('admin.videos_bulk_delete') %}
+    
+        <!-- Save search term -->
+        <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
+        
+        {{
+            tables.simple_table(
+                table=videos.items,
+                edit_endpoint='admin.videos_edit',
+                show_views=True,
+                show_added_date=True,
+                show_updated_date=True,
+                include_checkbox=True,
+                bulk_form=bulk_form
+            )
+        }}
+        
+    {% endcall %}
+
+    <!-- Deals with pages -->
+    {{ items.paginate(videos) }}
+
+{% endif %}
+{% endblock %}

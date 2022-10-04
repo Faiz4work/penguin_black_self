@@ -1,0 +1,60 @@
+{% extends 'layouts/app.html' %}
+
+{% set team1 = video.teams[0] %}
+{% set team2 = video.teams[1] %}
+
+
+{% block title %}
+{{ video.tournament.name }}: 
+{{ team1.name }} ({{ team1.country.name }}) 
+vs 
+{{ team2.name }} ({{ team2.country.name }}) 
+{% endblock %}
+
+
+{% block body %}
+
+<h2>
+    {{ video.tournament.name }}
+</h2>
+
+<h3>
+    {{ video.round }}
+    <br><br>
+    {{ video.discipline}} 
+    <br><br>
+    {{ team1.name | replace('_', ' / ') }} ({{ team1.country.name }}) 
+    vs 
+    {{ team2.name | replace('_', ' / ') }} ({{ team2.country.name }}) 
+</h3>
+
+<video width="720" controls>
+    <source src={{ video_path }} type="video/mp4"/>
+    <source src={{ video_path }} type="video/ogg"/>
+Your browser does not support the video tag.
+</video>
+
+<h4>
+    {{ video.highlights_type }}
+    <br><br>
+    <time class="short-date" data-datetime="{{ video.date }}">
+        {{ video.date }}
+    </time>
+    
+    <!-- Link to video edit page -->
+    {% if current_user.role == 'admin' %}
+        <br><br>
+        <a href="{{ url_for('admin.videos_edit', id=video.id) }}">
+            Edit
+        </a>
+    {% endif %}
+</h4>
+
+<!-- Back button -->
+{% if back_route != '_' and back_route != '_' %}
+    <a href="{{ url_for(back_route, query=query) }}">
+        Back
+    </a>
+{% endif %}
+
+{% endblock %}

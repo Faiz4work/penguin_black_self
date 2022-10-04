@@ -1,0 +1,232 @@
+{% import 'macros/items.html' as items %}
+
+
+{# Shows a link to update the user's payment method if their card will expire soon #}
+{% macro card_expiring_warning() -%}
+
+{# If user is logged in, subscribed, and their credit card will expire soon #}
+{% if current_user.is_authenticated and current_user.subscription and current_user.card.is_expiring %}
+    
+    {# Show alert #}
+    <div class="alert alert-warning" role="alert">
+        <div class="container">
+            Your credit card is going to expire soon,
+            <a href="{{ url_for('billing.update_payment_method') }}">please update it</a>
+            .
+        </div>
+    </div>
+{% endif %}
+
+{%- endmacro %}
+
+{# ---------------------------------------------------------------------- #}
+
+{# 
+Renders different buttons depending on state of user 
+
+Params:
+    plan (dict): Dictionary of plan details
+#}
+{% macro plan(plan) -%}
+
+<!-- <div class="col-md-4{{ ' scale-up' if plan.metadata.recommended }} {{ ' quarter-faded' if not plan.metadata.recommended }}"> -->
+<div class="col-md-4">
+    <div class="panel panel-default{{ ' panel-danger' if plan.metadata.recommended }}">
+        
+        <!-- Plan name -->
+        <div class="panel-heading text-center">
+            <h3>{{ plan.name }}</h3>
+        </div>
+        
+        <div class="panel-body">
+            
+            <!-- Show plan benefits -->
+            {{ caller () }}
+
+            <!-- If user is logged in -->
+            {% if current_user.is_authenticated %}
+            
+                <!-- If user is subscribed -->
+                {% if current_user.subscription %}
+                
+                    <!-- If the plan is the plan we'll change to in the next billing period, simply display it -->
+                    {% if plan.id == next_plan.id %}
+                        <strong>Current plan</strong>
+                    
+                    <!-- Plan is not set to change to in the next billing period - add button to change plan -->
+                    {% else %}
+                    
+                        <!-- Notice how we pass the (new) plan ID -->
+                        <button id="submit_{{ plan.id }}" name="submit_{{ plan.id }}">Change plan</button>
+                    
+                    {% endif %}
+                
+                <!-- User is NOT subscribed - add link to create subscription -->
+                {% else %}
+                    <a href="{{ url_for('billing.create', id=plan.id) }}">Continue</a>
+                
+                {% endif %}
+
+            <!-- User not logged in, add link to sign-up -->
+            {% else %}
+                <a href="{{ url_for('user.signup') }}">Sign up</a>
+                
+            {% endif %}
+
+            <!-- Convert cents to dollars (using custom Jinja filter, `format_currency`) -->
+            <p>${{ plan.amount | format_currency }} {{ plan.currency | upper }} / {{ plan.recurring.interval }}</p>
+
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{# ---------------------------------------------------------------------- #}
+
+{# 
+Shows next invoice
+
+Params:
+    invoice
+#}
+{% macro upcoming_invoice(invoice) -%}
+
+{# If there were no past invoices, display filler text #}
+{% if invoice == None %}
+    <h2>No upcoming payments</h2>
+    <p>You are not currently subscribed, so there's nothing to see here.</p>
+
+{# There are past invoices #}
+{% else %}
+
+    <h2>Next Invoice</h2>
+
+    {# Table #}
+    <table>
+        
+        {# Columns (all part of Stripe's Invoice API) #}
+        <thead>
+            <tr>
+                <th>Subscription</th>
+                <th>Next billing date</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        
+        {# Rows #}
+        <tbody>
+            <tr>
+                {# Plan name #}
+                <td>{{ invoice.plan }}</td>
+                
+                {# Next billing date #}
+                <td>
+                    <time class="short-date" data-datetime="{{ invoice.next_bill_on }}">
+                        {{ invoice.next_bill_on }}
+                    </time>
+                </td>
+                
+                {# Amount that will be charged #}
+                <td>
+                    ${{ invoice.amount_due | format_currency }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+{% endif %}
+
+{%- endmacro %}
+
+{# ---------------------------------------------------------------------- #}
+
+{# 
+Shows recent billing history 
+
+Params:
+    invoices 
+#}
+{% macro invoices(invoices) -%}
+
+<h2>Billing history</h2>
+
+{# No invoices were found #}
+{% if invoices.total == 0 %}
+    <p>No invoices found.</p>
+
+{# There are past invoices #}
+{% else %}
+
+    {# Table #}
+    <table>
+        
+        {# Columns #}
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Method</th>
+                <th>Subscription</th>
+                <th>Starting date</th>
+                <th>Ending date</th>
+                <th>Total</th>
+                <th>Invoice Number (click to download)</th>
+            </tr>
+        </thead>
+        
+        {# Rows #}
+        <tbody>
+            
+            {# Loop through all invoices #}
+            {% for invoice in invoices.items %}
+            <tr>
+                
+                {# Billing date #}
+                <td>
+                    <time class="from-now" data-datetime="{{ invoice.created_on }}">
+                        {{ invoice.created_on }}
+                    </time>
+                </td>
+                
+                {# Credict card info #}
+                <td class="small">
+                    {{ invoice.brand }} **** {{ invoice.last4 }}
+                </td>
+                
+                {# Plan #}
+                <td class="small">{{ invoice.plan_name }}</td>
+                
+                {# Starting date #}
+                <td>
+                    <time class="short-date" data-datetime="{{ invoice.period_start_on }}">
+                        {{ invoice.period_start_on }}
+                    </time>
+                </td>
+                
+                {# Ending date #}
+                <td>
+                    <time class="short-date" data-datetime="{{ invoice.period_end_on }}">
+                        {{ invoice.period_end_on }}
+                    </time>
+                </td>
+                
+                {# Total amount #}
+                <td title="{{ invoice.currency }}">
+                    ${{ invoice.total | format_currency }}
+                </td>
+                
+                <td class="small">
+                    <a href="{{ invoice.download_url }}">
+                        {{ invoice.invoice_number }}
+                    </a>
+                </td>
+            </tr>
+            
+            {% endfor %}
+            
+        </tbody>
+    </table>
+    
+    {{ items.paginate(invoices) }}
+    
+{% endif %}
+{%- endmacro %}

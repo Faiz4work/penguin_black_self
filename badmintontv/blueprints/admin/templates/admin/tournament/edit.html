@@ -1,0 +1,79 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/items.html' as items %}
+{% import 'macros/tables.html' as tables %}
+
+
+{% block title %}
+Admin - Tournaments / Update
+{% endblock %}
+
+
+{% block body %}
+
+<!-- Link to user-viewed page -->
+<a href="{{ url_for('video.tournament_to_matches', query=tournament.start_date.year)}}">
+    <h2>{{ tournament.name }}</h2>
+</a>
+
+{% call f.form_tag(endpoint='admin.tournaments_edit', **{'id': tournament.id}) %}
+    
+    {% call f.form_group(form.name) %}
+    {% endcall %}
+    
+    <!-- Button for POST request -->
+    <br>
+    <button type="submit">Save</button>
+
+    <!-- Cancel link -->
+    <br><br>
+    <a href="{{ url_for('admin.tournaments') }}">Cancel</a>
+
+{% endcall %}
+
+<hr>
+
+<h3>Details</h3>
+
+<label>Start Date</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="short-date" data-datetime="{{ tournament.start_date }}">
+    {{ tournament.start_date }}
+</time>
+<br><br>
+
+<label>End Date</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="short-date" data-datetime="{{ tournament.end_date }}">
+    {{ tournament.end_date }}
+</time>
+<br><br>
+
+<!-- Created on -->
+<label>Created on</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="from-now" data-datetime="{{ tournament.created_on }}">
+    {{ tournament.created_on }}
+</time>
+
+<!-- Last updated -->
+<br><br>
+<label>Last Updated</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="from-now" data-datetime="{{ tournament.updated_on }}">
+    {{ tournament.updated_on }}
+</time>
+
+<hr>
+
+<h3>Videos</h3>
+
+{{
+    tables.simple_table(
+        table=tournament.videos,
+        edit_endpoint='admin.videos_edit',
+        show_added_date=True
+    )
+}}
+    
+{% endblock %}

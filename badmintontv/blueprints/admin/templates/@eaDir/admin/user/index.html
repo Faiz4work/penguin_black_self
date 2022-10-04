@@ -1,0 +1,159 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/items.html' as items %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/user.html' as account %}
+
+
+{% block title %}
+Admin - Users / List
+{% endblock %}
+
+
+{% block body %}
+
+<!-- Search form -->
+<br>
+{{ f.search('admin.users') }}
+
+<!-- Case where there are no records -->
+{% if users.total == 0 %}
+    <h2>No results found</h2>
+
+    <!-- If a search term was supplied, show message to suggest to re-try serach -->
+    {% if request.args.get('q') %}
+        <p>Try limiting or removing your search terms.</p>
+
+    <!-- No users are in system, show sign-up message-->
+    {% else %}
+        <p>There are no users present, you should <a href="{{ url_for('user.signup') }}">sign up</a>.</p>
+
+    {% endif %}
+
+<!-- Render table -->
+{% else %}
+    <h2>All Users</h2>
+
+    {% call f.form_tag('admin.users_bulk_delete') %}
+    
+        <!-- Save search term -->
+        <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <label for="select_all"></label>
+                        
+                        <!-- Select-all checkbox -->
+                        <input id="select_all" name="select_all" type="checkbox">
+                    </th>
+
+                    <!-- Table columns can be sorted -->
+                    <th class="col-header">
+                        <!-- Sort on `created_on` column, and show header as 'Registered'-->
+                        {{ items.sort('created_on', 'Registered') }}
+                    </th>
+                    <th class="col-header">
+                        {{ items.sort('name', 'Username / Email') }}
+                    </th>
+                    <th class="col-header">
+                        {{ items.sort('current_period_end', 'Subscription End Date') }}
+                    </th>
+                    <th class="col-header">
+                        {{ items.sort('current_sign_in_on', 'Last seen') }}
+                    </th>
+                    <th class="col-header">
+                        {{ items.sort('sign_in_count', 'Sign in count') }}
+                    </th>
+                    <th class="col-header">
+                        {{ items.sort('current_sign_in_region', 'Country') }}
+                    </th>
+                    <th class="col-header">
+                        {{ items.sort('locale', 'Language') }}
+                    </th>
+
+                    <!-- Render form-fields for bulk delete -->
+                    <th id="bulk_actions" colspan="4">
+                        {{ f.field(bulk_form.scope, inline=True) }}
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Delete items
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- Loop over all users  -->
+                {% for user in users.items %}
+
+                    <!-- Display user info in table format -->
+                    <tr>
+
+                        <!-- Checkbox -->
+                        <td>
+                            <label for="bulk_ids"></label>
+                            
+                            <!-- Each singular checkbox -->
+                            <input class="checkbox-item" id="bulk_ids" name="bulk_ids" type="checkbox" value="{{ user.id }}">
+                        </td>
+
+                        <!-- Display relative time format (via `class=from-now`) -->
+                        <td>
+                            <time class="from-now" data-datetime="{{ user.created_on }}">
+                                {{ user.created_on }}
+                            </time>
+                        </td>
+
+                        <!-- Render account info -->
+                        <td>
+                            <a href="{{ url_for('admin.users_edit', id=user.id) }}">
+
+                                <!-- Distinguish admins from users with icon -->
+                                <div>{{ account.role_icon_for(user) }}</div>
+
+                                <!-- Username and email -->
+                                <h4 class="media-heading">{{ user.username }}</h4>
+                                <p class="text-muted">{{ user.email }} (Admin: {{ user.role == 'admin' }})</p>
+                            </a>
+                        </td>
+                        
+                        <!-- Subscription End Date -->
+                        {% if user.subscription %}
+                            <td>
+                                <time class="from-now" data-datetime="{{ user.subscription.current_period_end }}">
+                                    {{ user.subscription.current_period_end }}
+                                </time>
+                            </td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+
+                        <!-- Last signed in date -->
+                        <td>
+                            {% if user.current_sign_in_on %}
+                            <time class="from-now" data-datetime="{{ user.current_sign_in_on }}">
+                                {{ user.current_sign_in_on }}
+                            </time>
+                            {% endif %}
+                        </td>
+
+                        <!-- Sign-in count -->
+                        <td>{{ user.sign_in_count }}</td>
+                        
+                        <!-- Currently signed-in region -->
+                        <td>{{ user.current_sign_in_region }}</td>
+                        
+                        <!-- Language set -->
+                        <td>{{ LANGUAGES[user.locale] }}</td>
+                        
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endcall %}
+
+    <!-- Deals with pages -->
+    {{ items.paginate(users) }}
+
+{% endif %}
+{% endblock %}

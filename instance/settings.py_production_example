@@ -1,0 +1,53 @@
+# -------------- Overwriting /config/settings.py --------------
+
+DEBUG = False
+DEBUG_TB_INTERCEPT_REDIRECTS = False
+
+SERVER_NAME = ''
+
+SECRET_KEY = ''
+
+# Postgres
+hostname = 'postgres'
+port = '5432'
+db_name = 'badmintontv'
+
+# Username and password must match the ones in `.env`
+username = 'badmintontv'
+password = ''
+SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(username, password, hostname, port, db_name)
+
+# Initial admin user 
+SEED_ADMIN_USERNAME = ''
+SEED_ADMIN_EMAIL = ''
+SEED_ADMIN_PASSWORD = ''
+
+# Initial member user 
+SEED_MEMBER_USERNAME = ''
+SEED_MEMBER_EMAIL = ''
+SEED_MEMBER_PASSWORD = ''
+
+# Initial second member user 
+SEED_MEMBER_2_USERNAME = ''
+SEED_MEMBER_2_EMAIL = ''
+SEED_MEMBER_2_PASSWORD = ''
+
+# Emails
+MAILGUN_API_KEY = ''
+MAILGUN_DOMAIN = ''
+
+# -------------- New variables --------------
+
+# IP location 
+IPINFO_ACCESS_TOKEN = ''
+
+# For error logs (production only)
+MAIL_EMAIL = ''
+MAIL_PASSWORD = ''
+
+# Payments
+STRIPE_SECRET_KEY = ''
+STRIPE_PUBLISHABLE_KEY = ''
+
+# Google Analytics 
+ANALYTICS_GOOGLE_UA = ''

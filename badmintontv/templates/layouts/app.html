@@ -1,0 +1,81 @@
+
+
+{% extends 'layouts/base.html' %}
+
+
+{% block header %}
+
+<!-- Home / Announcements-->
+<li><a href="{{ url_for('page.index') }}">Home</a></li>
+<li><a href="{{ url_for('page.announcements') }}">Announcements</a></li>
+
+<hr>
+
+<!-- Videos/Pricing -->
+{% if current_user.is_authenticated and (current_user.subscription or current_user.role == 'admin') %}
+{% else %}
+    <li><a href="{{ url_for('billing.pricing') }}">Pricing</a></li>
+    <hr>
+{% endif %}
+
+<li><a href="{{ url_for('video.latest_tournament') }}">Latest Tournament</a></li>
+<li><a href="{{ url_for('video.tournaments') }}">Tournaments</a></li>
+<li><a href="{{ url_for('video.teams') }}">Players</a></li>
+<li><a href="{{ url_for('video.countries') }}">Countries</a></li>
+
+<hr>
+
+<!-- If user is logged in -->
+{% if current_user.is_authenticated %}
+    <li><a href="{{ url_for('user.settings') }}">Settings</a></li>
+    <li><a href="{{ url_for('user.logout') }}">Log out</a></li>
+
+<!-- If user is NOT logged in -->
+{% else %}
+    <li><a href="{{ url_for('user.login') }}">Log in</a></li>
+    <li><a href="{{ url_for('user.begin_signup') }}">Sign up</a></li>
+    
+    <hr>
+    
+    <!-- Language drop-down when user is not logged in -->
+    <p>Select your language</p>
+    {% for key, value in LANGUAGES.items() %}
+        {% if CURRENT_LANGUAGE == key %}
+            <b>{{ value }}</b>
+        {% else %}
+            <li><a href="{{ url_for('page.set_language', language=key) }}">
+                {{ value }}
+            </a></li>
+        {%  endif %}
+     {% endfor %}
+
+{% endif %}
+
+<hr>
+
+<!-- Admin -->
+{% if current_user.role == 'admin' %}
+    <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('admin.users') }}">Users</a></li>
+    <li><a href="{{ url_for('admin.invoices') }}">Invoices</a></li>
+    <li><a href="{{ url_for('admin.videos') }}">Videos</a></li>
+    <li><a href="{{ url_for('admin.tournaments') }}">Tournaments</a></li>
+    <li><a href="{{ url_for('admin.teams') }}">Teams</a></li>
+    <li><a href="{{ url_for('admin.countries') }}">Countries</a></li>
+    <li><a href="{{ url_for('admin.views') }}">Views</a></li>
+{% endif %}
+
+{% endblock %}
+
+
+{% block footer %}
+
+<hr>
+
+<!-- FAQ -->
+<li><a href="{{ url_for('page.faq') }}">FAQ</a></li>
+
+<!-- Contact -->
+<li><a href="{{ url_for('contact.index') }}">Contact</a></li>
+
+{% endblock %}

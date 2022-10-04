@@ -1,0 +1,157 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/tables.html' as tables %}
+
+
+{% block title %}
+Admin - Videos / Update
+{% endblock %}
+
+
+{% block body %}
+
+<h2>{{ video.folder }}</h2>
+
+<!-- Link to user-viewed page -->
+<a href="{{ url_for('video.match', id=video.id, highlights_type=video.highlights_type, from_route='_', query='_')}}">
+    <h3>{{ video.name }}</h3>
+</a>
+
+{% call f.form_tag(endpoint='admin.videos_edit', **{'id': video.id}) %}
+    
+    {% call f.form_group(form.tournament) %}
+    {% endcall %}
+    
+    <br>
+    {% call f.form_group(form.teams) %}
+    {% endcall %}
+    
+    <br>
+    {% call f.form_group(form.countries) %}
+    {% endcall %}
+    
+    <br>
+    {% call f.form_group(form.quality) %}
+    {% endcall %}
+    
+    <br>
+    {% call f.form_group(form.date) %}
+    {% endcall %}
+    
+    <br>
+    {% call f.form_group(form.round) %}
+    {% endcall %}
+    
+    <br>
+    {% call f.form_group(form.discipline) %}
+    {% endcall %}
+    
+    <!-- Button for POST request -->
+    <br>
+    <button type="submit">Save</button>
+
+    <!-- Cancel link -->
+    <br><br>
+    <a href="{{ url_for('admin.users') }}">Cancel</a>
+
+{% endcall %}
+
+<hr>
+
+<h3>Tournament</h3>
+
+{% if video.tournament['id'] %}
+
+    {{ 
+        tables.simple_table(
+            table=[video.tournament],
+            edit_endpoint='admin.tournaments_edit'
+        ) 
+    }}
+
+{% else %}
+    Tournament not found 
+
+{% endif %}
+
+<hr>
+
+<h3>Teams</h3>
+
+{{ 
+    tables.simple_table(
+        table=video.teams,
+        edit_endpoint='admin.teams_edit'
+    )
+}}
+
+<hr>
+
+<h3>Countries</h3>
+
+{{ 
+    tables.simple_table(
+        table=all_countries, 
+        edit_endpoint='admin.countries_edit'
+    )
+}}
+
+<hr>
+
+<h3>Details</h3>
+
+View Count: {{ video.views | length }}
+<br><br>
+
+<!-- Link to invoices (with user's email as search term) -->
+<a href="{{ url_for('admin.views', q=video.name)}}">Check Views</a>
+<br><br>
+
+<label>Filename</label>
+<br>&nbsp;&nbsp;&nbsp;
+{{ video.filename }}
+<br><br>
+
+<label>Highlights DateTime</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="short-date" data-datetime="{{ video.highlights_datetime }}">
+    {{ video.highlights_datetime }}
+</time>
+<br><br>
+
+<label>Highlights Type</label>
+<br>&nbsp;&nbsp;&nbsp;
+{{ video.highlights_type }}
+<br><br>
+
+<label>Highlights File</label>
+<br>&nbsp;&nbsp;&nbsp;
+{{ video.highlights_filename }}
+<br><br>
+
+<label>Highlights Duration</label>
+<br>&nbsp;&nbsp;&nbsp;
+{{ video.highlights_duration }}
+<br><br>
+
+<label>Model</label>
+<br>&nbsp;&nbsp;&nbsp;
+{{ video.model_name }}
+<br><br>
+
+<!-- Created on -->
+<label>Created on</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="from-now" data-datetime="{{ video.created_on }}">
+    {{ video.created_on }}
+</time>
+
+<!-- Last updated -->
+<br><br>
+<label>Last Updated</label>
+<br>&nbsp;&nbsp;&nbsp;
+<time class="from-now" data-datetime="{{ video.updated_on }}">
+    {{ video.updated_on }}
+</time>
+    
+{% endblock %}

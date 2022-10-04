@@ -1,0 +1,85 @@
+{% extends 'layouts/app.html' %}
+
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+
+{% block body %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tournaments.css')}}">
+
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+<h2>{{ title | replace('_', ' / ') }}</h2>
+
+<!-- Tournaments -->
+{% if tournaments_to_videos | length > 0 %}
+    {% for tournament, videos in tournaments_to_videos.items() %}
+        
+        <h3>
+            {{ tournament.name }}
+        </h3>
+        <h4>
+            <time class="short-date" data-datetime="{{ tournament.start_date }}">
+                {{ tournament.start_date }}
+            </time>
+            -
+            <time class="short-date" data-datetime="{{ tournament.end_date }}">
+                {{ tournament.end_date }}
+            </time>
+        </h4>
+
+        <!-- Videos -->
+        <div class="video_box">
+        {% for video in videos %}
+
+            <div class="lTournament_box">
+
+            {% set team1 = video.teams[0] %}
+            {% set team2 = video.teams[1] %}
+            
+            <a href="{{ url_for('video.match', id=video.id, highlights_type=video.highlights_type, from_route=from_route, query=query)}}">
+                [{{ video.highlights_type }}]
+                <br>
+                {{ video.round }}
+                <br>
+                {{ video.discipline }}
+                <br>
+                {{ team1.name | replace('_', ' / ') }} ({{ team1.country.name }}) 
+                vs 
+                {{ team2.name | replace('_', ' / ') }} ({{ team2.country.name }}) 
+                <br>
+                <time class="short-date" data-datetime="{{ video.date }}">
+                    {{ video.date }}
+                </time>
+            </a>
+            <br><br>
+        </div>
+        {% endfor %}
+     </div>
+
+    {% endfor %}
+
+{% else %}
+    No tournament found.
+
+{% endif %}
+
+<!-- Back button -->
+{% if back_route != '_' %}
+    <a href="{{ url_for(back_route) }}">
+        Back
+    </a>
+{% endif %}
+
+</div>
+</div>
+</div>
+
+
+{% endblock %}

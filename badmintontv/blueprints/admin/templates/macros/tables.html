@@ -1,0 +1,263 @@
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/items.html' as items %}
+
+{# 
+Used to render a summary table for the following tables:
+- Video
+- Tournament
+- Team
+- Country
+- View
+
+Params:
+    table (list):                List with rows/entries
+    edit_endpoint (str):         Endpoint to re-direct when clicking 'name'
+    show_views (bool):           If True, include view count (for `Video` model)
+    show_country (bool):         If True, include country (for `Team` model)
+    show_added_date (bool):      If True, include `created_on` column; False otherwise
+    show_updated_date (bool):    If True, include `updated_on` column; False otherwise
+    include_checkbox (bool):     If True, include checkboxes (for bulk-deletion)
+    bulk_form (flask_wtf Form):  Bulk Form for usage with `include_checkbox`
+#}
+{%- macro simple_table(
+    table,
+    edit_endpoint=None,
+    show_views=False,
+    show_country=False,
+    show_added_date=False, 
+    show_updated_date=False, 
+    include_checkbox=False,
+    bulk_form=None) -%}
+
+{% set num_rows = table | length %}
+
+{% if num_rows != 0 %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                
+                {% if include_checkbox %}
+                    <th>
+                        <label for="select_all"></label>
+                        <input id="select_all" name="select_all" type="checkbox">
+                    </th>
+                    
+                    <th id="bulk_actions" colspan="4">
+                        {{ f.field(bulk_form.scope, inline=True) }}
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Delete items
+                        </button>
+                    </th>
+                {% endif %}
+                
+                {% if show_added_date %}
+                    <th class="col-header">
+                        {{ items.sort('created_on', 'Added on') }}
+                    </th>
+                {% endif %}
+                
+                <!-- Unique case for `View` table -->
+                {% if table[0].__class__.__name__ == 'View' %}
+                
+                    <th class="col-header">
+                        {{ items.sort('ip', 'IP Address') }}
+                    </th>
+        
+                    <th class="col-header">
+                        {{ items.sort('country', 'Country') }}
+                    </th>
+                    
+                    <th class="col-header">
+                        {{ items.sort('duration', 'Duration') }}
+                    </th>
+
+                    <th class="col-header">
+                        {{ items.sort('video_name', 'Video') }}
+                    </th>
+
+                <!-- Video, Tournament, Team, Country -->
+                {% else %}
+                    
+                    {% if table[0].date %}
+                        <th class="col-header">
+                            {{ items.sort('date', 'Date') }}
+                        </th>
+                    {% endif %}
+                    
+                    <!-- View count -->
+                    {% if show_views and table[0].views.__class__.__name__ == 'InstrumentedList' %}
+                        <th class="col-header">
+                            {{ items.sort('num_views', 'View Count') }}
+                        </th>
+                    {% endif %}
+                    
+                    <th class="col-header">
+                        {{ items.sort('name', 'Name') }}
+                    </th>
+                    
+                    {% if show_country and table[0].country %}
+                        <th class="col-header">
+                            {{ items.sort('country', 'Country') }}
+                        </th>
+                    {% endif %}
+                    
+                    {% if table[0].highlights_type %}
+                        <th class="col-header">
+                            {{ items.sort('highlights_type', 'Type') }}
+                        </th>
+                    {% endif %}
+                    
+                    {% if table[0].model_name %}
+                        <th class="col-header">
+                            {{ items.sort('model_name', 'Model') }}
+                        </th>
+                    {% endif %}
+                    
+                    {% if table[0].start_date and table[0].end_date %}
+                        <th class="col-header">
+                            {{ items.sort('start_date', 'Start Date') }}
+                        </th>
+                        <th class="col-header">
+                            {{ items.sort('end_date', 'End Date') }}
+                        </th>
+                    {% endif %}
+                    
+                    {% if show_updated_date %}
+                        <th class="col-header">
+                            {{ items.sort('updated_on', 'Last Updated') }}
+                        </th>
+                    {% endif %}
+                
+                {% endif %}
+                
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for i in range(num_rows) %}
+                <tr>
+                    
+                    {% set row = table[i] %}
+                    
+                    {% if include_checkbox %}
+                        <td>
+                            <label for="bulk_ids"></label>
+                            <input class="checkbox-item" id="bulk_ids" name="bulk_ids" type="checkbox" value="{{ row.id }}">
+                        </td>
+                    {% endif %}
+                    
+                    {% if show_added_date %}
+                        <td>
+                            <time class="from-now" data-datetime="{{ row.created_on }}">
+                                {{ row.created_on }}
+                            </time>
+                        </td>
+                    {% endif %}
+                    
+                    <!-- Unique case for `View` table -->
+                    {% if row.__class__.__name__ == 'View' %}
+                        <td>
+                            <a href="{{ url_for('admin.users_edit', id=row.user_id) }}">
+                                {{ row.user.username }}
+                                <br>
+                                ({{ row.ip }})
+                            </a>
+                        </td>
+                        
+                        <td>
+                            {{ row.country }}
+                        </td>
+                        
+                        <!-- Calculate percentage of video watched -->
+                        {% set watch_seconds = row.duration | hms_to_s %}
+                        {% set duration = row.video.highlights_duration | hms_to_s%}
+                        {% set percent = watch_seconds / duration %}
+                        
+                        <td>
+                            {{ row.duration }} ({{ percent }}%)
+                        </td>
+
+                        <td>
+                            <a href="{{ url_for(edit_endpoint, id=row.video['id']) }}">
+                                {{ row.video.name }}
+                                <br>
+                                ({{ row.video.highlights_type }})
+                            </a>
+                        </td>
+                    
+                    <!-- Video, Tournament, Team, Country -->
+                    {% else %}
+                    
+                        {% if row.date %}
+                            <td>
+                                {{ row.date }}
+                            </td>
+                        {% endif %}
+                        
+                        <!-- View count -->
+                        {% if show_views and row.views.__class__.__name__ == 'InstrumentedList' %}
+                            <td>
+                                {{ row.views | length }}
+                            </td>
+                        {% endif %}
+                
+                        <td>
+                            {% if row.id %}
+                                <a href="{{ url_for(edit_endpoint, id=row.id) }}">
+                                    {{ row.name }}
+                                </a>
+                            {% else %}
+                                No rows found.
+                            {% endif %}
+                        </td>
+                        
+                        {% if show_country and row.country %}
+                            <td>
+                                <a href="{{ url_for('admin.countries_edit', id=row.country.id) }}">
+                                    {{ row.country.name }}
+                                </a>
+                            </td>
+                        {% endif %}
+                    
+                        {% if row.highlights_type %}
+                            <td>
+                                {{ row.highlights_type }}
+                            </td>
+                        {% endif %}
+                        
+                        {% if row.model_name %}
+                            <td>
+                                {{ row.model_name }}
+                            </td>
+                        {% endif %}
+                        
+                        {% if row.start_date and row.end_date %}
+                            <td>
+                                <time class="short-date" data-datetime="{{ row.start_date }}">
+                                    {{ row.start_date }}
+                                </time>
+                            </td>
+                            <td>
+                                <time class="short-date" data-datetime="{{ row.end_date }}">
+                                    {{ row.end_date }}
+                                </time>
+                            </td>
+                        {% endif %}
+                        
+                        {% if show_updated_date %}
+                            <td>
+                                <time class="from-now" data-datetime="{{ row.updated_on }}">
+                                    {{ row.updated_on }}
+                                </time>
+                            </td>
+                        {% endif %}
+                    
+                    {% endif %}
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{%- endmacro -%}

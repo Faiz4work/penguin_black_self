@@ -1,0 +1,39 @@
+{% extends 'layouts/app.html' %}
+
+
+{% block title %}
+Countries
+{% endblock %}
+
+
+{% block body %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/countries.css')}}">
+
+<div class="main">
+    <div class="card">
+    <div class="card-body" >
+        
+        <h2>All Countries</h2>
+        
+        <div class="country_box">
+            {% for country in countries %}
+            <div class="all_box">
+                <a href="{{ url_for('video.country_to_matches', query=country.name)}}">
+                    {{ country.name | format_country }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+</div>
+</div>
+</div>
+
+
+{% for country in countries %}
+    
+    
+    <br><br>
+        
+{% endfor %}
+
+{% endblock %}

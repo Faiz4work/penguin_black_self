@@ -1,0 +1,58 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+{% import 'macros/billing.html' as billing with context %}
+
+
+{% block title %}
+Remove Ads
+{% endblock %}
+
+
+{% block body %}
+
+<!-- If subscribed (change plan) -->
+{% if current_user.subscription %}
+    <h2>Change plans?</h2>
+    <div class="alert alert-warning">
+        Your plan will change <strong>after this billing cycle</strong> after clicking 'Change plan'.
+    </div>
+    
+<!-- Not subscibed (pricing)-->
+{% else %}
+    <h2>Subscribe here</h2>
+{% endif %}
+
+<!-- ... -->
+{% call f.form_tag('billing.update') %}
+    
+    <!-- Show monthly plan -->
+    {% if prices['price_1LLSkEB3IubKswtThyGF1ovL'] %}
+            
+        {% call billing.plan(prices['price_1LLSkEB3IubKswtThyGF1ovL']) %}
+        <ul class="list-group list-group-flush text-center">
+            <li class="list-group-item">Access to all videos</li>
+            <li class="list-group-item">Dark mode</li>
+        </ul>
+        {% endcall %}
+
+    {% endif %}
+        
+    <!-- Show yearly plan -->
+    {% if prices['price_1LLSkFB3IubKswtT6g2YcjhI'] %}
+    {% call billing.plan(prices['price_1LLSkFB3IubKswtT6g2YcjhI']) %}
+        <ul class="list-group list-group-flush text-center">
+            <li class="list-group-item">Access to all videos</li>
+            <li class="list-group-item">Dark mode</li>
+        </ul>
+    {% endcall %}
+    {% endif %}
+    
+{% endcall %}
+
+<!-- Back link -->
+{% if current_user.is_authenticated %}
+    <br>
+    <a href="{{ url_for('user.settings') }}">Back</a>
+{% endif %}
+
+{% endblock %}
