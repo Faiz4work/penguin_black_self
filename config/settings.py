@@ -50,7 +50,7 @@ db_name = 'badmintontv'
 
 # Username and password must match the ones in `.env`
 username = 'postgres'
-password = 'opan123'
+password = 'opayn123'
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(username, password, hostname, port, db_name)
 
