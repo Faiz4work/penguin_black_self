@@ -1,8 +1,9 @@
 import os 
 import json
 import datetime 
-from flask import Blueprint, render_template, current_app, flash
+from flask import Blueprint, render_template, current_app, flash, request
 from flask_login import login_required
+
 
 from config import settings
 from libs.util_datetime import localize_datetime
@@ -18,8 +19,9 @@ admin = Blueprint(
     'admin', 
     __name__, 
     template_folder='../templates', 
-    url_prefix='/admin'
+    # url_prefix='/admin'
 )
+    
 
 
 @admin.before_request     # This is called before all other functions
@@ -27,10 +29,10 @@ admin = Blueprint(
 @role_required('admin')     # Make sure user is an admin 
 def before_request():
     '''Protect all of the admin endpoints by making sure user is logged in and is an admin'''
-    pass
+    current_app.config['VID_DIR'] = "badmintontv/static/videos/"
 
 
-@admin.route('', methods=['GET', 'POST'])   # `/admin`, due to `url_prefix` in blueprint
+@admin.route('/admin', methods=['GET', 'POST'])   # `/admin`, due to `url_prefix` in blueprint
 def dashboard():
     '''Renders a template with count information for groups in DB'''
     
@@ -40,9 +42,8 @@ def dashboard():
     add = False
     new_videos_metadata, num_new_videos = _new_videos(add=add)
 
-    # POST request to add new videos 
-    if form.validate_on_submit():
-        
+    # POST request to add new videos
+    if request.method == 'POST':
         add = True
         new_videos_metadata, num_new_videos = _new_videos(add=add)
         
@@ -126,7 +127,6 @@ def _new_videos(add=False):
             current_app.config['VID_DIR'], 
             tournament
         )
-        
         # Skip system-generated folders 
         if tournament.startswith('.') or tournament.startswith('@'):
             continue

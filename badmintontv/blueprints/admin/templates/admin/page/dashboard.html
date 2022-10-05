@@ -4,12 +4,20 @@
 {% import 'macros/form.html' as f with context %}
 
 
+
+
+
 {% block title %}
 Admin - Dashboard
 {% endblock %}
 
 
 {% block body %}
+
+
+<div class="main">
+    <div class="card">
+        <div class="card-body">
 
 <h2>Admin Dashboard</h2>
 
@@ -22,13 +30,12 @@ Admin - Dashboard
 <hr>
 
 <!-- Button to add new videos -->
-{% call f.form_tag('admin.dashboard') %}
 
-    <h2>Add new videos</h2>
+    <a href="#" class="btn btn-success">Add New Video</a>
+    <a href="{{ url_for('admin.countries') }}" class="btn btn-success">Countries</a>
+    <a href="#" class="btn btn-success">Tournaments</a>
+    <a href="#" class="btn btn-success">Teams</a>
 
-    <button type="submit">Add</button>
-
-{% endcall %}
 
 <!-- Display metadata on added videos -->
 {% if add %}
@@ -59,7 +66,7 @@ Admin - Dashboard
 </span>
 
 <h4>Plan Split</h4>
-{{ stats.get_stats(group_and_count_plans, prices=prices) }}
+{#} {{ stats.get_stats(group_and_count_plans, prices=prices) }} {#}
 
 <hr/>
 
@@ -94,3 +101,6 @@ Admin - Dashboard
 {{ stats.get_stats(group_and_count_view) }}
 
 {% endblock %}
+</div>
+</div>
+</div>

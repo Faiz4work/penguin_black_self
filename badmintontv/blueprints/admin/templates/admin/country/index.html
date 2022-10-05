@@ -11,6 +11,12 @@ Admin - Countries / List
 
 
 {% block body %}
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+<!-- flash message -->
+{% include "layouts/_flash.html" %}        
 
 <!-- Search form -->
 <br>
@@ -32,28 +38,56 @@ Admin - Countries / List
 
 <!-- Render table -->
 {% else %}
-    <h2>All Countries ({{ count }})</h2>
+    <h2 class="my-2">All Countries ({{ count }})</h2>
 
-    {% call f.form_tag('admin.countries_bulk_delete') %}
+    <!-- 'admin.countries_bulk_delete' -->
     
         <!-- Save search term -->
         <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
         
-        {{
-            tables.simple_table(
-                table=countries.items,
-                edit_endpoint='admin.countries_edit',
-                show_added_date=True,
-                show_updated_date=True,
-                include_checkbox=True,
-                bulk_form=bulk_form
-            )
-        }}
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th>Created on</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for country in countries.items %}
+                        <tr>
+                            <td>{{ country.created_on }}</td>
+                            <td>{{ country.name }}</td>
+                            <td><a href="country/edit/{{country.id}}" 
+                                class="btn btn-sm btn-light">Edit</a></td>
+                            <td><a href="country/delete/{{country.id}}" 
+                                class="btn btn-sm btn-danger">Delete</a></td>
+                        </tr>
+                {% endfor %}
+                
+            </tbody>
+
+        </table>
         
-    {% endcall %}
+
 
     <!-- Deals with pages -->
-    {{ items.paginate(countries) }}
+    <!-- jinja2 items.paginate(countries)  -->
+
+    <!-- Pagination -->
+    <center>
+        <span class="btn btn-sm btn-dark {% if not countries.has_prev %} disabled {% endif %}">Prev</span>
+        <span class="btn btn-sm btn-dark">{{ countries.page }}</span>
+        <span class="btn btn-sm btn-dark {% if not countries.has_next %} disabled {% endif %}">Next</span>
+    </center>
+        
+    
+    
+    
 
 {% endif %}
+
+</div>
+</div>
+</div>
 {% endblock %}

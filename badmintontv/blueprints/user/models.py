@@ -304,11 +304,13 @@ class User(UserMixin, ResourceMixin, db.Model):
         # Save current sign-in info 
         self.current_sign_in_on = tzware_datetime()
         self.current_sign_in_ip = ip_address
-        self.current_sign_in_region = ip_to_region(
-            ip_address,
-            access_token=current_app.config['IPINFO_ACCESS_TOKEN']
-        )
-
+        try:
+            self.current_sign_in_region = ip_to_region(
+                ip_address,
+                access_token=current_app.config['IPINFO_ACCESS_TOKEN']
+            )
+        except:
+            self.current_sign_in_region = None
         return self.save()
 
     @classmethod
@@ -337,14 +339,15 @@ class User(UserMixin, ResourceMixin, db.Model):
         # Create serialized token 
         signup_token = user.serialize_token()
 
+        # commenting this for making a user
         # This prevents circular imports
-        from badmintontv.blueprints.user.tasks import deliver_signup_email
+        # from badmintontv.blueprints.user.tasks import deliver_signup_email
         
-        # Send email in background 
-        deliver_signup_email.delay(
-            user_id=user.id, 
-            signup_token=signup_token
-        )
+        # # Send email in background 
+        # deliver_signup_email.delay(
+        #     user_id=user.id, 
+        #     signup_token=signup_token
+        # )
 
         return user
 

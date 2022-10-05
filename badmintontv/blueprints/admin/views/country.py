@@ -10,7 +10,7 @@ import libs.util_sqlalchemy as utils
 from badmintontv.blueprints.video.models import Country, Team, Video, videos_teams
 from badmintontv.blueprints.admin.forms import SearchForm, BulkDeleteForm, CountryForm
 from badmintontv.blueprints.admin.views.dashboard import admin
-
+from badmintontv.extensions import db
 
 @admin.route('/country', defaults={'page': 1})   # Set default page to 1
 @admin.route('/country/page/<int:page>')
@@ -109,5 +109,18 @@ def countries_bulk_delete():
     else:
         flash('No countries were deleted, something went wrong.', 'error')
 
+    # Re-direct to users page 
+    return redirect(url_for('admin.countries'))
+
+
+@admin.route("/country/delete/<int:id>")
+def delete_country(id):
+    c = Country.query.get(id)
+    name = c.name
+    db.session.delete(c)
+    db.session.commit()
+    
+    flash(f"{name} has been deleted!", "success")
+    
     # Re-direct to users page 
     return redirect(url_for('admin.countries'))

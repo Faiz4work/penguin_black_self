@@ -104,3 +104,8 @@ def tournaments_bulk_delete():
 
     # Re-direct to users page 
     return redirect(url_for('admin.tournaments'))
+
+
+@admin.route("/test5")
+def test4():
+    return "this is a test page"
