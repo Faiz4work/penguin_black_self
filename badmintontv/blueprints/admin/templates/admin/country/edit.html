@@ -1,41 +1,39 @@
 {% extends 'layouts/app.html' %}
-{% import 'macros/form.html' as f with context %}
-{% import 'macros/items.html' as items %}
-{% import 'macros/tables.html' as tables %}
-
 
 {% block title %}
-Admin - Countries / Update
+Admin - Edit Country
 {% endblock %}
 
-
 {% block body %}
-
-<!-- Link to user-viewed page -->
-<a href="{{ url_for('video.country_to_matches', query=country.name)}}">
-    <h2>{{ country.name }}</h2>
-</a>
-
-{% call f.form_tag(endpoint='admin.countries_edit', **{'id': country.id}) %}
+<style>
+    .co{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .co > label{
+        font-size: large;
+        margin-right: 10px;
+    }
+</style>
+<div class="main">
+    <div class="card">
+        <div class="card-body">
     
-    {% call f.form_group(form.teams) %}
-    {% endcall %}
+            <button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
 
-    <br>
-    {% call f.form_group(form.name) %}
-    {% endcall %}
-    
-    <!-- Button for POST request -->
-    <br>
-    <button type="submit">Save</button>
-
-    <!-- Cancel link -->
-    <br><br>
-    <a href="{{ url_for('admin.countries') }}">Cancel</a>
-
-{% endcall %}
-
-<hr>
+    <form class="co" method="post" 
+        action="{{ url_for('admin.countries_edit', id=country.id) }}"
+    >
+        <label for="country">Country</label>
+        <input type="text" id="country" value="{{ country.name }}" 
+            name="country_name">
+        <input type="submit" class="btn btn-warning btn-sm mx-3" 
+            value="Update">
+    </form>
 
 <h3>Details</h3>
 
@@ -56,25 +54,10 @@ Admin - Countries / Update
 
 <hr>
 
-<h3>Teams</h3>
 
-{{ 
-    tables.simple_table(
-        table=country.teams,
-        edit_endpoint='admin.teams_edit'
-    )
-}}
+        </div>
+    </div>
+</div>
 
-<hr>
 
-<h3>Videos</h3>
-
-{{
-    tables.simple_table(
-        table=all_videos,
-        edit_endpoint='admin.videos_edit',
-        show_added_date=True
-    )
-}}
-    
-{% endblock %}
+{% endblock body %}

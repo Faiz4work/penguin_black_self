@@ -1,0 +1,48 @@
+{% extends "layouts/app.html" %} 
+
+{% block title %} Admin - Add Country {%endblock title %} 
+
+{% block body %}
+<style>
+    .co{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .co > label{
+        font-size: large;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="main">
+  <div class="card">
+    <div class="card-body">
+
+        <button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
+
+      <form
+        class="co"
+        method="post"
+        action="{{ url_for('admin.add_country') }}"
+      >
+        <label for="country">Country Name</label>
+        <input
+          type="text"
+          id="country"
+          name="country_name"
+        />
+        <input
+          type="submit"
+          class="btn btn-warning btn-sm mx-3"
+          value="Add"
+        />
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

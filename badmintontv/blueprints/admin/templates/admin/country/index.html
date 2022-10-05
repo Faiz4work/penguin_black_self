@@ -19,7 +19,12 @@ Admin - Countries / List
 {% include "layouts/_flash.html" %}        
 
 <!-- Search form -->
-<br>
+<div class="c_header">
+    <button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
+    <a href="/country/add" class="btn btn-sm btn-outline-danger">Add Country</a>
+</div>
 {{ f.search('admin.countries') }}
 
 <!-- Case where there are no records -->
@@ -38,14 +43,16 @@ Admin - Countries / List
 
 <!-- Render table -->
 {% else %}
-    <h2 class="my-2">All Countries ({{ count }})</h2>
+            <center>
+                <h3 style="margin: 10px auto;">All Countries ({{ count }})</h3>
+            </center>
 
     <!-- 'admin.countries_bulk_delete' -->
     
         <!-- Save search term -->
         <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
         
-        <table class="table table-responsive">
+        <table class="table table-responsive table-hover text-center table-bordered">
             <thead>
                 <tr>
                     <th>Created on</th>
@@ -76,9 +83,13 @@ Admin - Countries / List
 
     <!-- Pagination -->
     <center>
-        <span class="btn btn-sm btn-dark {% if not countries.has_prev %} disabled {% endif %}">Prev</span>
-        <span class="btn btn-sm btn-dark">{{ countries.page }}</span>
-        <span class="btn btn-sm btn-dark {% if not countries.has_next %} disabled {% endif %}">Next</span>
+        <a class="btn btn-sm btn-dark {% if not countries.has_prev %} disabled {% endif %}"
+            href="/country/page/{{ countries.page - 1 }}">Prev</a>
+        <a class="btn btn-sm btn-dark" href="/country/page/{{countries.page}}"
+            >{{ countries.page }}</a>
+        <a class="btn btn-sm btn-dark {% if not countries.has_next %} disabled {% endif %}"
+            href="/country/page/{{ countries.page + 1 }}">Next</a>
+        
     </center>
         
     

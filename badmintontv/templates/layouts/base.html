@@ -4,12 +4,10 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-    {% if title %}
-      <title>{{ title }}</title>
-    {% else %}
-    <title>Panguan Black</title>
-    {% endif %}
+    <title>
+    {% block title %}
+    {% endblock title %}
+    </title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -17,16 +15,16 @@
     />
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="static/assets/images/logo/favicon.ico" />
+    <link rel="shortcut icon" href="/static/css_images/fev2.png" type="image/png" />
 
     <!-- page css -->
     <link
-      href="static/assets/vendors/apexcharts/dist/apexcharts.css"
+      href="/static/assets/vendors/apexcharts/dist/apexcharts.css"
       rel="stylesheet"
     />
 
     <!-- Core css -->
-    <link href="static/assets/css/app.min.css" rel="stylesheet" />
+    <link href="/static/assets/css/app.min.css" rel="stylesheet" />
 
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css')}}">
@@ -53,6 +51,11 @@
               <input type="checkbox">
               <span class="slider round"></span>
             </label>
+
+            {% if current_user.role == 'admin' %}
+            <a href="/admin" class="btn btn-outline-danger btn-sm">Admin</a>
+            {% endif %}
+
           </div>
 
 
@@ -145,7 +148,7 @@
                       style="width: 40px; height: 40px; line-height: 40px"
                     >
                       <img
-                        src="static/assets/images/avatars/thumb-4.jpg"
+                        src="/static/assets/images/avatars/thumb-4.jpg"
                         alt=""
                       />
                     </div>
@@ -245,7 +248,7 @@
                   class="avatar avatar-circle avatar-image"
                   style="width: 35px; height: 35px; line-height: 35px"
                 >
-                  <img src="static/assets/images/avatars/thumb-1.jpg" alt="" />
+                  <img src="/static/assets/images/avatars/thumb-1.jpg" alt="" />
                 </div>
                 <span class="fw-bold mx-1">{{ current_user.username }}</span>
                 <i class="feather icon-chevron-down"></i>
@@ -255,7 +258,7 @@
                   <div class="d-flex align-items-center">
                     <div class="avatar avatar-circle avatar-image">
                       <img
-                        src="static/assets/images/avatars/thumb-1.jpg"
+                        src="/static/assets/images/avatars/thumb-1.jpg"
                         alt=""
                       />
                     </div>
@@ -318,8 +321,8 @@
         <div class="w-100 logo">
           <img
             class="img-fluid"
-            src="static/assets/images/logo/logo.png"
-            style="margin-top: 10px; max-height: 90px" 
+            src="/static/css_images/logo.png"
+            style="width: 200%; height: 60%;"
             alt="logo"
           />
         </div>
@@ -584,14 +587,14 @@
 </div>
 
 <!-- Core Vendors JS -->
-<script src="static/assets/js/vendors.min.js"></script>
+<script src="/static/assets/js/vendors.min.js"></script>
 
 <!-- page js -->
-<script src="static/assets/vendors/apexcharts/dist/apexcharts.min.js"></script>
-<script src="static/assets/js/pages/dashboard.js"></script>
+<script src="/static/assets/vendors/apexcharts/dist/apexcharts.min.js"></script>
+<script src="/static/assets/js/pages/dashboard.js"></script>
 
 <!-- Core JS -->
-<script src="static/assets/js/app.min.js"></script>
+<script src="/static/assets/js/app.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 

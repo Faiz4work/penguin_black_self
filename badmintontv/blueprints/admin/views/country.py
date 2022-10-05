@@ -10,7 +10,7 @@ import libs.util_sqlalchemy as utils
 from badmintontv.blueprints.video.models import Country, Team, Video, videos_teams
 from badmintontv.blueprints.admin.forms import SearchForm, BulkDeleteForm, CountryForm
 from badmintontv.blueprints.admin.views.dashboard import admin
-from badmintontv.extensions import db
+from badmintontv.extensions import db, csrf
 
 @admin.route('/country', defaults={'page': 1})   # Set default page to 1
 @admin.route('/country/page/<int:page>')
@@ -43,40 +43,27 @@ def countries(page):
 
 
 @admin.route('/country/edit/<int:id>', methods=['GET', 'POST'])
+@csrf.exempt
 def countries_edit(id):
     '''Edit a country's details'''
     
     # Get user by ID 
     country = Country.query.get(id)
     
-    # Populate form with countries data
-    form = CountryForm(obj=country)
-    
     # POST request 
-    if form.validate_on_submit():
-
-        # Populate country with form 
-        form.populate_obj(country)
-
-        # Save to DB
-        country.save()
-
+    if request.method == "POST":
+        country_name = request.form.get("country_name")
+        country.name = country_name
+        db.session.commit()
+        
         # Flash confirmation message
         flash('Country has been updated successfully.', 'success')
-        
-        # Re-direct to users page 
-        return redirect(url_for('admin.countries_edit', id=id))
+        return redirect(url_for('admin.countries'))
     
-    # Get all videos for this country
-    all_videos = Video.query.join(videos_teams).join(Team).join(Country).filter(
-        Country.name == country.name
-    ).all()
 
     # Form submission failed - keep form data 
-    return render_template('admin/country/edit.html', 
-        form=form, 
+    return render_template('admin/country/edit.html',
         country=country,
-        all_videos=all_videos
     )
 
 
@@ -124,3 +111,17 @@ def delete_country(id):
     
     # Re-direct to users page 
     return redirect(url_for('admin.countries'))
+
+@admin.route("/country/add", methods=["GET", "POST"])
+@csrf.exempt
+def add_country():
+    if request.method == "POST":
+        country_name = request.form.get("country_name")
+        c = Country(
+            name = country_name
+        )
+        db.session.add(c)
+        db.session.commit()
+        return redirect(url_for('admin.countries'))
+        
+    return render_template("admin/country/add_country.html")
