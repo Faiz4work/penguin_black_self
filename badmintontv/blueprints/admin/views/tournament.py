@@ -106,6 +106,9 @@ def tournaments_bulk_delete():
     return redirect(url_for('admin.tournaments'))
 
 
-@admin.route("/test5")
-def test4():
-    return "this is a test page"
+@admin.route("/tournament/add", methods=["GET", "POST"])
+def add_tournament():
+    if request.method == "POST":
+        pass
+    
+    return render_template("admin/tournament/add_tournament.html")

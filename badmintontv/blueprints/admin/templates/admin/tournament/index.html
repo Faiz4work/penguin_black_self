@@ -11,9 +11,21 @@ Admin - Tournaments / List
 
 
 {% block body %}
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+    <!-- flash message -->
+{% include "layouts/_flash.html" %}    
+
+<div class="c_header">
+    <button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
+    <a href="{{ url_for('admin.add_tournament') }}" class="btn btn-sm btn-outline-danger">Add Tournament</a>
+</div>
 
 <!-- Search form -->
-<br>
 {{ f.search('admin.tournaments') }}
 
 <!-- Case where there are no records -->
@@ -32,28 +44,54 @@ Admin - Tournaments / List
 
 <!-- Render table -->
 {% else %}
-    <h2>All Tournaments ({{ count }})</h2>
-
-    {% call f.form_tag('admin.tournaments_bulk_delete') %}
+    <center>
+        <h3 style="margin: 10px auto;">All Tournaments ({{ count }})</h3>
+    </center>
     
         <!-- Save search term -->
         <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
-        
-        {{
-            tables.simple_table(
-                table=tournaments.items,
-                edit_endpoint='admin.tournaments_edit',
-                show_added_date=True,
-                show_updated_date=True,
-                include_checkbox=True,
-                bulk_form=bulk_form
-            )
-        }}
+    
+        <table class="table table-responsive table-hover text-center table-bordered">
+            <thead>
+                <tr>
+                    <th>Added on</th>
+                    <th>Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Last Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tournaments.items %}
+                    <tr>
+                        <td>{{ t.created_on }}</td>
+                        <td>{{ t.name }}</td>
+                        <td>{{ t.start_date }}</td>
+                        <td>{{ t.end_date }}</td>
+                        <td>{{ t.updated_on }}</td>
+                    </tr>
+                {% endfor %}
+                
+                
+            </tbody>
 
-    {% endcall %}
+        </table>
 
     <!-- Deals with pages -->
-    {{ items.paginate(tournaments) }}
+    <!-- Pagination -->
+    <center>
+        <a class="btn btn-sm btn-dark {% if not tournaments.has_prev %} disabled {% endif %}"
+            href="/tournament/page/{{ tournaments.page - 1 }}">Prev</a>
+        <a class="btn btn-sm btn-dark" href="/tournament/page/{{tournaments.page}}"
+            >{{ tournaments.page }}</a>
+        <a class="btn btn-sm btn-dark {% if not tournaments.has_next %} disabled {% endif %}"
+            href="/tournament/page/{{ tournaments.page + 1 }}">Next</a>
+    </center>
 
 {% endif %}
+
+
+</div>
+</div>
+</div>
 {% endblock %}

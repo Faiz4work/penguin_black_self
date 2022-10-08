@@ -18,13 +18,14 @@ Admin - Countries / List
 <!-- flash message -->
 {% include "layouts/_flash.html" %}        
 
-<!-- Search form -->
 <div class="c_header">
     <button class="btn btn-sm btn-outline-dark d-inline"
                 onclick="window.history.back()"    
             >Go Back</button>
     <a href="/country/add" class="btn btn-sm btn-outline-danger">Add Country</a>
 </div>
+
+<!-- Search form -->
 {{ f.search('admin.countries') }}
 
 <!-- Case where there are no records -->
@@ -89,7 +90,6 @@ Admin - Countries / List
             >{{ countries.page }}</a>
         <a class="btn btn-sm btn-dark {% if not countries.has_next %} disabled {% endif %}"
             href="/country/page/{{ countries.page + 1 }}">Next</a>
-        
     </center>
         
     

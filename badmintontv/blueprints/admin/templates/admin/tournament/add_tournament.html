@@ -1,0 +1,73 @@
+{% extends "layouts/app.html" %} 
+
+{% block title %} Admin - Add Tournament {% endblock title %} 
+
+{% block body %}
+<style>
+    .co{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .co > label{
+        font-size: large;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="main">
+  <div class="card">
+    <div class="card-body">
+
+        <button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
+
+      <form
+        class="co"
+        method="post"
+        action="{{ url_for('admin.add_tournament') }}"
+      >
+        <div class="form-group">
+
+      
+            <div>
+                <label for="tour">Tournament Name</label>
+                <input class="form-control"
+                type="text"
+                id="tour"
+                name="tournament_name"
+                />
+            </div>
+
+            <div class="">
+                <label for="sd">Start Date</label>
+                <input class="form-control"
+                type="date"
+                id="sd"
+                name="start_date"
+                />
+            </div>
+
+            <div>
+                <label for="ed">End Date</label>
+                <input class="form-control"
+                type="date"
+                id="ed"
+                name="end_date"
+                />
+            </div>
+
+            <input
+            type="submit"
+            class="btn btn-warning form-control my-3"
+            value="Add"
+            />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
