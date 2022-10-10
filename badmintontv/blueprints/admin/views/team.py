@@ -7,9 +7,10 @@ from sqlalchemy import text
 
 import libs.util_sqlalchemy as utils
 
-from badmintontv.blueprints.video.models import Team
+from badmintontv.blueprints.video.models import Country, Team
 from badmintontv.blueprints.admin.forms import SearchForm, BulkDeleteForm, TeamForm
 from badmintontv.blueprints.admin.views.dashboard import admin
+from badmintontv.extensions import db, csrf
 
 
 @admin.route('/team', defaults={'page': 1})   # Set default page to 1
@@ -29,7 +30,8 @@ def teams(page):
     paginated_teams, count = utils.simple_paginate(
         model=Team,
         order_values=order_values,
-        page=page
+        page=page,
+        num_items=10,
     )      
 
     # Render index template 
@@ -105,3 +107,29 @@ def teams_bulk_delete():
 
     # Re-direct to users page 
     return redirect(url_for('admin.teams'))
+
+
+@admin.route("/team/add", methods=["GET", "POST"])
+@csrf.exempt
+def add_team():
+    if request.method == "POST":
+        team_name = request.form.get("team_name")
+        country = request.form.get("country")
+        if country != "None":
+            country = Country.query.get(int(country))
+        else:
+            country = None
+        
+        t = Team(
+            name = team_name,
+            country = country,
+        )
+        db.session.add(t)
+        db.session.commit()
+        
+        return redirect(url_for("admin.teams"))
+            
+    
+    countries = Country.query.all()
+    return render_template("admin/team/add_team.html",
+                           countries=countries)

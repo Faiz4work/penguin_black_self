@@ -12,8 +12,18 @@ Admin - Teams / List
 
 {% block body %}
 
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+            <div class="c_header">
+                <button class="btn btn-sm btn-outline-dark d-inline"
+                            onclick="window.history.back()"    
+                        >Go Back</button>
+                <a href="/team/add" class="btn btn-sm btn-outline-danger">Add a Team</a>
+            </div>
+
 <!-- Search form -->
-<br>
 {{ f.search('admin.teams') }}
 
 <!-- Case where there are no records -->
@@ -33,28 +43,51 @@ Admin - Teams / List
 <!-- Render table -->
 {% else %}
     <h2>All Teams ({{ count }})</h2>
-
-    {% call f.form_tag('admin.teams_bulk_delete') %}
     
         <!-- Save search term -->
         <input type="hidden" id="q" name="q" value="{{ request.args.get('q') }}">
         
-        {{
-            tables.simple_table(
-                table=teams.items,
-                edit_endpoint='admin.teams_edit',
-                show_country=True,
-                show_added_date=True,
-                show_updated_date=True,
-                include_checkbox=True,
-                bulk_form=bulk_form
-            )
-        }}
+        <div class="table-responsive">
+            <table class="table text-center table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Added on</th>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in teams.items %}
+                        <tr>
+                            <td>{{ t.created_on }}</td>
+                            <td>{{ t.name }}</td>
+                            <td>{{ t.country.name }}</td>
+                            <td><a href="#" class="btn btn-sm btn-light">Edit</a></td>
+                            <td><a href="#" class="btn btn-sm btn-danger">Delete</a></td>
+                        </tr>
+                    {% endfor %}
+                    
+                    
+                </tbody>
 
-    {% endcall %}
+            </table>
+        </div>
 
-    <!-- Deals with pages -->
-    {{ items.paginate(teams) }}
+
+    <!-- Pagination -->
+    <center>
+        <a class="btn btn-sm btn-dark {% if not teams.has_prev %} disabled {% endif %}"
+            href="/team/page/{{ teams.page - 1 }}">Prev</a>
+        <a class="btn btn-sm btn-dark" href="/team/page/{{teams.page}}"
+            >{{ teams.page }}</a>
+        <a class="btn btn-sm btn-dark {% if not teams.has_next %} disabled {% endif %}"
+            href="/team/page/{{ teams.page + 1 }}">Next</a>
+    </center>
 
 {% endif %}
+
+</div>
+</div>
+</div>
 {% endblock %}

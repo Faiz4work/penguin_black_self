@@ -1,0 +1,68 @@
+{% extends "layouts/app.html" %} 
+
+{% block title %} Admin - Add New Team {%endblock title %} 
+
+{% block body %}
+<style>
+    .co{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .co > label{
+        font-size: large;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="main">
+  <div class="card">
+    <div class="card-body">
+
+        <button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
+
+   
+      <form
+        class="co"
+        method="post"
+        action="{{ url_for('admin.add_team') }}"
+      >
+        <div class="form-group">
+
+      
+            <div>
+                <label for="tour">Team Name</label>
+                <input class="form-control"
+                type="text"
+                id="tour"
+                name="team_name"
+                required
+                />
+            </div>
+
+
+            <div>
+                <label for="c">Select Country</label>
+                <select name="country" id="c" class="form-select">
+                    <option value="None" selected>-----</option>
+                    {% for country in countries %}
+                        <option value="{{ country.id }}">{{ country.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <input
+            type="submit"
+            class="btn btn-warning form-control my-3"
+            value="Add Team"
+            />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

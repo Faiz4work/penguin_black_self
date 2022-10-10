@@ -10,6 +10,7 @@ import libs.util_sqlalchemy as utils
 from badmintontv.blueprints.video.models import Tournament
 from badmintontv.blueprints.admin.forms import SearchForm, BulkDeleteForm, TournamentForm
 from badmintontv.blueprints.admin.views.dashboard import admin
+from badmintontv.extensions import db, csrf
 
 
 @admin.route('/tournament', defaults={'page': 1})   # Set default page to 1
@@ -42,6 +43,7 @@ def tournaments(page):
 
 
 @admin.route('/tournament/edit/<int:id>', methods=['GET', 'POST'])
+@csrf.exempt
 def tournaments_edit(id):
     '''Edit a tournament's details'''
     
@@ -49,26 +51,28 @@ def tournaments_edit(id):
     tournament = Tournament.query.get(id)
     
     # Populate form with tournaments data
-    form = TournamentForm(obj=tournament)
+    # form = TournamentForm(obj=tournament)
     
     # POST request 
-    if form.validate_on_submit():
-
-        # Populate tournaments with form 
-        form.populate_obj(tournament)
-
-        # Save to DB
-        tournament.save()
+    if request.method == "POST":
+        t_name = request.form.get("tournament_name")
+        start_date = request.form.get("start_date")
+        end_date = request.form.get("end_date")
+        
+        tournament.name = t_name
+        tournament.start_date = start_date
+        tournament.end_date = end_date
+        
+        db.session.commit()
 
         # Flash confirmation message
         flash('Tournament has been updated successfully.', 'success')
         
         # Re-direct to users page 
-        return redirect(url_for('admin.tournaments_edit', id=id))
+        return redirect(url_for('admin.tournaments'))
 
     # Form submission failed - keep form data 
     return render_template('admin/tournament/edit.html', 
-        form=form, 
         tournament=tournament
     )
 
@@ -107,8 +111,31 @@ def tournaments_bulk_delete():
 
 
 @admin.route("/tournament/add", methods=["GET", "POST"])
+@csrf.exempt
 def add_tournament():
     if request.method == "POST":
-        pass
+        t_name = request.form.get("tournament_name")
+        s_date = request.form.get("start_date")
+        e_date = request.form.get("end_date")
+        
+        t = Tournament(
+            name = t_name,
+            start_date = s_date,
+            end_date = e_date,
+        )
+        db.session.add(t)
+        db.session.commit()
+        return redirect(url_for('admin.tournaments'))
+        
     
     return render_template("admin/tournament/add_tournament.html")
+
+
+@admin.route("/tournament/delete/<int:id>")
+def delete_tournament(id):
+    t = Tournament.query.get(id)
+    db.session.delete(t)
+    db.session.commit()
+    flash("Tournament has been deleted.", "success")
+    return redirect(url_for('admin.tournaments'))
+

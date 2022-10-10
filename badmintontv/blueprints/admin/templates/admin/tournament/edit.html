@@ -11,69 +11,68 @@ Admin - Tournaments / Update
 
 {% block body %}
 
+<div class="main">
+    <div class="card">
+        <div class="card-body">
+
+
 <!-- Link to user-viewed page -->
+<button class="btn btn-sm btn-outline-dark d-inline"
+                onclick="window.history.back()"    
+            >Go Back</button>
 <a href="{{ url_for('video.tournament_to_matches', query=tournament.start_date.year)}}">
-    <h2>{{ tournament.name }}</h2>
+    <center>
+        <h2>{{ tournament.name }}</h2>
+    </center>
 </a>
 
-{% call f.form_tag(endpoint='admin.tournaments_edit', **{'id': tournament.id}) %}
-    
-    {% call f.form_group(form.name) %}
-    {% endcall %}
-    
-    <!-- Button for POST request -->
-    <br>
-    <button type="submit">Save</button>
+<form action="{{ url_for('admin.tournaments_edit', id=tournament.id) }}"
+     method="POST">
 
-    <!-- Cancel link -->
-    <br><br>
-    <a href="{{ url_for('admin.tournaments') }}">Cancel</a>
+    <div class="form-group col-10 d-block mx-auto">
 
-{% endcall %}
+      
+        <div>
+            <label for="tour">Tournament Name</label>
+            <input class="form-control"
+            type="text"
+            id="tour"
+            value="{{ tournament.name }}"
+            name="tournament_name"
+            />
+        </div>
 
-<hr>
+        <div class="">
+            <label for="sd">Start Date</label>
+            <input class="form-control"
+            type="date"
+            id="sd"
+            value="{{ tournament.start_date }}"
+            name="start_date"
+            />
+        </div>
 
-<h3>Details</h3>
+        <div>
+            <label for="ed">End Date</label>
+            <input class="form-control"
+            type="date"
+            id="ed"
+            value="{{ tournament.end_date }}"
+            name="end_date"
+            />
+        </div>
 
-<label>Start Date</label>
-<br>&nbsp;&nbsp;&nbsp;
-<time class="short-date" data-datetime="{{ tournament.start_date }}">
-    {{ tournament.start_date }}
-</time>
-<br><br>
+        <input
+        type="submit"
+        class="btn btn-warning form-control my-3 col-5"
+        value="Update"
+        />
+    </div>
 
-<label>End Date</label>
-<br>&nbsp;&nbsp;&nbsp;
-<time class="short-date" data-datetime="{{ tournament.end_date }}">
-    {{ tournament.end_date }}
-</time>
-<br><br>
+</form>
 
-<!-- Created on -->
-<label>Created on</label>
-<br>&nbsp;&nbsp;&nbsp;
-<time class="from-now" data-datetime="{{ tournament.created_on }}">
-    {{ tournament.created_on }}
-</time>
 
-<!-- Last updated -->
-<br><br>
-<label>Last Updated</label>
-<br>&nbsp;&nbsp;&nbsp;
-<time class="from-now" data-datetime="{{ tournament.updated_on }}">
-    {{ tournament.updated_on }}
-</time>
-
-<hr>
-
-<h3>Videos</h3>
-
-{{
-    tables.simple_table(
-        table=tournament.videos,
-        edit_endpoint='admin.videos_edit',
-        show_added_date=True
-    )
-}}
-    
+</div>
+</div>
+</div>
 {% endblock %}

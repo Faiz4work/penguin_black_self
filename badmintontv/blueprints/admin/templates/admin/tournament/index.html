@@ -58,7 +58,7 @@ Admin - Tournaments / List
                     <th>Name</th>
                     <th>Start Date</th>
                     <th>End Date</th>
-                    <th>Last Update</th>
+                    <th colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +68,11 @@ Admin - Tournaments / List
                         <td>{{ t.name }}</td>
                         <td>{{ t.start_date }}</td>
                         <td>{{ t.end_date }}</td>
-                        <td>{{ t.updated_on }}</td>
+                        <td><a href="{{ url_for('admin.tournaments_edit',
+                                id=t.id) }}" 
+                            class="btn btn-sm btn-light">Edit</a></td>
+                        <td><a href="{{ url_for('admin.delete_tournament', id=t.id) }}"
+                            class="btn btn-sm btn-danger">Delete</a></td>
                     </tr>
                 {% endfor %}
                 
